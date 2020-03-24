@@ -46,7 +46,19 @@ class Card:
 class NumCard(Card):
 
     def __init__(self, colour, value):
-        
+        super().__init__(colour, action=None)
+        self.score = value
+
+    @property
+    def score(self):
+        return self._score
+    
+    @score.setter
+    def score(self, value):
+        if value < 0 or value > 9:
+            raise ValueError("Score of a NumCard must be between 0 and 9.")
+        else:
+            self._score = value
 
 if __name__ == "__main__":
     # tests
