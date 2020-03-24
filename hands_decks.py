@@ -20,7 +20,15 @@ class DiscardPile(Pile):
     """
 
     def __init__(self):
-        super().__init__(self)
+        super().__init__()
+
+class DrawPile(Pile):
+    """
+    Where cards are drawn from.
+    """
+
+    def __init__(self):
+        super().__init__()
 
 class Deck(Pile):
     """
