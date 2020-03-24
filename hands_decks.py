@@ -7,9 +7,20 @@ import random
 from pprint import pprint
 
 class Pile:
+    """
+    Superclass for a group of cards.
+    """
 
     def __init__(self):
         self.cards = []
+
+class DiscardPile(Pile):
+    """
+    Where cards are discarded to.
+    """
+
+    def __init__(self):
+        super().__init__(self)
 
 class Deck(Pile):
     """
@@ -24,13 +35,18 @@ class Deck(Pile):
      - 4 Wild
      - 4 Wild Draw Four
 
+     The number cards have the numbers 0-9, with 1-9 repeated (i.e. they have two of every number
+     between 0 and 9 except 0, which they only have one of.)
+
     This class manages all 108 cards.
     """
     def __init__(self):
-        super().__init__(self)
+        super().__init__()
         for colour in COLOURS:
-            for i in range(19):
-                self.cards.append(NumCard(colour, random.randint(0,9)))
+            for i in range(0, 10): # stop point is exclusive
+                self.cards.append(NumCard(colour, value=i))
+            for i in range(1, 10): # start point is inclusive
+                self.cards.append(NumCard(colour, value=i))
             for i in range(2):
                 self.cards.append(Draw2Card(colour))
                 self.cards.append(ReverseCard(colour))
@@ -39,7 +55,7 @@ class Deck(Pile):
             self.cards.append(WildCard())
             self.cards.append(WildDraw4Card())
         pprint(self.cards)
-        self.shuffle()
+        #self.shuffle()
 
     def shuffle(self):
         random.shuffle(self.cards)  
