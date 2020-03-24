@@ -2,17 +2,21 @@
 """
 UnoPy - The Card Game brought to life by Python.
 
-card.py contains the code for class Card and tests.
+cards.py contains the code for all types of card used in Uno.
 """
 
-COLOURS = ("Red", "Blue", "Green", "Yellow", "Black")
-ACTIONS = ("None", "Reverse", "Draw Two", "Skip", "Wild", "Wild Draw 4")
+COLOURS = ("Red", "Blue", "Green", "Yellow")
+ACTIONS = ("Number", "Reverse", "Draw Two", "Skip", "Wild", "Wild Draw 4")
 
 class Card:
     def __init__(self, colour, action=None):
         self.colour = colour
         self.action = action
         self.score = 0 # amount added to score
+        self.cards_drawn = 0 # how many cards to draw
+
+    def __repr__(self):
+        return f"{self.colour} {self.action} Card worth {self.score} points."
 
     @property
     def colour(self):
@@ -22,9 +26,8 @@ class Card:
     @colour.setter
     def colour(self, value):
         "Checks that value is in COLOURS before setting self._colour. If not, raises an UnoException."
-        print("Colour setter called.")
         if value not in COLOURS:
-            raise ValueError(f"Invalid Colour: {value}. Colours must be one of: {COLOURS}.")
+            self._colour = "Black"
         else:
             self._colour = value
 
@@ -36,10 +39,10 @@ class Card:
     @action.setter
     def action(self, value):
         "Checks that value is in ACTIONS before setting self._actiob. If not, raises an UnoException."
-        if value not in ACTIONS:
+        if value == None:
+            self._action = "Number"
+        elif value not in ACTIONS:
             raise ValueError(f"Invalid Action: {value}. Actions must be one of: {ACTIONS}.")
-        elif value == None:
-            self._action = None
         else:
             self._action = value
 
@@ -60,9 +63,34 @@ class NumCard(Card):
         else:
             self._score = value
 
-if __name__ == "__main__":
-    # tests
-    r = Card("Red", "None")
-    print(r.colour)
-    print(r.action)
-    p = Card("Pink", "Skip")
+class Draw2Card(Card):
+
+    def __init__(self, colour):
+        super().__init__(colour, action="Draw Two")
+        self.score = 20 # constant
+        self.cards_drawn = 2
+
+class ReverseCard(Card):
+
+    def __init__(self, colour):
+        super().__init__(colour, action="Reverse")
+        self.score = 20
+
+class SkipCard(Card):
+
+    def __init__(self, colour):
+        super().__init__(colour, action="Reverse")
+        self.score = 20
+    
+class WildCard(Card):
+
+    def __init__(self):
+        super().__init__(colour="Black", action="Wild")
+        self.score = 50
+
+class WildDraw4Card(Card):
+
+    def __init__(self):
+        super().__init__(colour="Black", action="Wild Draw 4")
+        self.score = 50
+        self.cards_drawn = 4
