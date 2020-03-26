@@ -15,9 +15,17 @@ class Pile:
         self.cards = []
 
     def draw_cards(self, cards):
+        """
+        Appends cards to internal list.
+        """
         self.cards += cards
 
     def discard_cards(self, amount):
+        """
+        Generator function that Pops {amount} of cards from self.cards and yields results.
+        
+        Catches IndexError and prints 'Run out of cards'.
+        """
         try:
             for i in range(amount):
                 yield self.cards.pop(i)
@@ -49,8 +57,8 @@ class Deck(Pile):
      - 4 Wild
      - 4 Wild Draw Four
 
-     The number cards have the numbers 0-9, with 1-9 repeated (i.e. they have two of every number
-     between 0 and 9 except 0, which they only have one of.)
+    The number cards have the numbers 0-9, with 1-9 repeated (i.e. they have two of every number
+    between 0 and 9 except 0, which they only have one of.)
 
     This class manages all 108 cards.
     """
@@ -72,6 +80,11 @@ class Deck(Pile):
         #self.shuffle()
 
     def shuffle(self):
+        """
+        Uses random.shuffle() to shuffe self.cards.
+
+        TODO: implement shuffling algorithm based on Spotify's playlist shuffle so that similar cards are far apart: https://codegolf.stackexchange.com/questions/198094/spotify-shuffle-music-playlist-shuffle-algorithm
+        """
         random.shuffle(self.cards)  
 
 class Hand(Pile):
