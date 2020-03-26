@@ -14,21 +14,27 @@ class Pile:
     def __init__(self):
         self.cards = []
 
+    def draw_cards(self, cards):
+        self.cards += cards
+
+    def discard_cards(self, amount):
+        try:
+            for i in range(amount):
+                yield self.cards.pop(i)
+        except IndexError:
+            print("Run out of cards.")
+
 class DiscardPile(Pile):
     """
     Where cards are discarded to.
     """
-
-    def __init__(self):
-        super().__init__()
+    pass
 
 class DrawPile(Pile):
     """
     Where cards are drawn from.
     """
-
-    def __init__(self):
-        super().__init__()
+    pass
 
 class Deck(Pile):
     """
@@ -67,6 +73,12 @@ class Deck(Pile):
 
     def shuffle(self):
         random.shuffle(self.cards)  
+
+class Hand(Pile):
+    """
+    A single player's hand.
+    """
+    pass
 
 if __name__ == "__main__":
     d = Deck()
