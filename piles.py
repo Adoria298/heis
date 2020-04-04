@@ -32,6 +32,14 @@ class Pile:
         except IndexError:
             print("Run out of cards.")
 
+    def shuffle(self):
+        """
+        Uses random.shuffle() to shuffe self.cards.
+
+        TODO: implement shuffling algorithm based on Spotify's playlist shuffle so that similar cards are far apart: https://codegolf.stackexchange.com/questions/198094/spotify-shuffle-music-playlist-shuffle-algorithm
+        """
+        random.shuffle(self.cards)  
+
 class DiscardPile(Pile):
     """
     Where cards are discarded to.
@@ -79,13 +87,6 @@ class Deck(Pile):
         pprint(self.cards)
         #self.shuffle()
 
-    def shuffle(self):
-        """
-        Uses random.shuffle() to shuffe self.cards.
-
-        TODO: implement shuffling algorithm based on Spotify's playlist shuffle so that similar cards are far apart: https://codegolf.stackexchange.com/questions/198094/spotify-shuffle-music-playlist-shuffle-algorithm
-        """
-        random.shuffle(self.cards)  
 
 class Hand(Pile):
     """
