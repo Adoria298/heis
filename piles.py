@@ -72,10 +72,10 @@ class Deck(Pile):
     The number cards have the numbers 0-9, with 1-9 repeated (i.e. they have two of every number
     between 0 and 9 except 0, which they only have one of.)
 
-    This class manages all 108 cards.
+    This class creates all 108 cards.
     """
     def __init__(self):
-        super().__init__()
+        super().__init__(cards=[])
         for colour in COLOURS:
             for i in range(0, 10): # stop point is exclusive
                 self.cards.append(NumCard(colour, value=i))
@@ -89,7 +89,7 @@ class Deck(Pile):
             self.cards.append(WildCard())
             self.cards.append(WildDraw4Card())
         pprint(self.cards)
-        #self.shuffle()
+
 
 
 class Hand(Pile):

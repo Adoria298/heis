@@ -9,12 +9,12 @@ from dataclasses import dataclass
 COLOURS = ("Red", "Blue", "Green", "Yellow")
 ACTIONS = ("Number", "Reverse", "Draw Two", "Skip", "Wild", "Wild Draw 4")
 
-@dataclass()
+@dataclass
 class Card:
     colour: str
-    action: str
-    score: int # amount added to score
-    cards_drawn: int # cards to draw when this card is played
+    action: str = None
+    score: int = 0 # amount added to score
+    cards_drawn: int = 0 # cards to draw when this card is played
 
     @property
     def colour(self):
@@ -78,7 +78,7 @@ class SkipCard(Card):
 class WildCard(Card):
 
     def __init__(self):
-        super().__init__(colour="Black", action="Wild", score=50, card_drawn=0)
+        super().__init__(colour="Black", action="Wild", score=50, cards_drawn=0)
 
 
 class WildDraw4Card(Card):
