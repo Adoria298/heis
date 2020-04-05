@@ -2,17 +2,21 @@
 """
 Code for managing hands and decks of cards.
 """
-from cards import NumCard, Draw2Card, ReverseCard, SkipCard, WildCard, WildDraw4Card, COLOURS
+from cards import Card, NumCard, Draw2Card, ReverseCard, SkipCard, WildCard, WildDraw4Card, COLOURS
 import random
 from pprint import pprint
+from dataclasses import dataclass
+from typing import List
 
+@dataclass
 class Pile:
     """
     Superclass for a group of cards.
     """
+    cards: List[Card]
 
-    def __init__(self):
-        self.cards = []
+    def __len__(self):
+        return len(self.cards)
 
     def draw_cards(self, cards):
         """
