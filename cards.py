@@ -4,19 +4,17 @@ UnoPy - The Card Game brought to life by Python.
 
 cards.py contains the code for all types of card used in Uno.
 """
+from dataclasses import dataclass
 
 COLOURS = ("Red", "Blue", "Green", "Yellow")
 ACTIONS = ("Number", "Reverse", "Draw Two", "Skip", "Wild", "Wild Draw 4")
 
+@dataclass()
 class Card:
-    def __init__(self, colour, action=None):
-        self.colour = colour
-        self.action = action
-        self.score = 0 # amount added to score
-        self.cards_drawn = 0 # how many cards to draw
-
-    def __repr__(self):
-        return f"{self.colour} {self.action} Card worth {self.score} points."
+    colour: str
+    action: str
+    score: int # amount added to score
+    cards_drawn: int # cards to draw when this card is played
 
     @property
     def colour(self):
@@ -49,8 +47,7 @@ class Card:
 class NumCard(Card):
 
     def __init__(self, colour, value):
-        super().__init__(colour, action=None)
-        self.score = value
+        super().__init__(colour, action=None, score=value, cards_drawn=0)
 
     @property
     def score(self):
@@ -66,31 +63,25 @@ class NumCard(Card):
 class Draw2Card(Card):
 
     def __init__(self, colour):
-        super().__init__(colour, action="Draw Two")
-        self.score = 20 # constant
-        self.cards_drawn = 2
-
+        super().__init__(colour, action="Draw Two", score=20, cards_drawn=2)
+        
 class ReverseCard(Card):
 
     def __init__(self, colour):
-        super().__init__(colour, action="Reverse")
-        self.score = 20
+        super().__init__(colour, action="Reverse", score=20, cards_drawn=0)
 
 class SkipCard(Card):
 
     def __init__(self, colour):
-        super().__init__(colour, action="Reverse")
-        self.score = 20
-    
+        super().__init__(colour, action="Reverse", score=20, cards_drawn=0)
+
 class WildCard(Card):
 
     def __init__(self):
-        super().__init__(colour="Black", action="Wild")
-        self.score = 50
+        super().__init__(colour="Black", action="Wild", score=50, card_drawn=0)
+
 
 class WildDraw4Card(Card):
 
     def __init__(self):
-        super().__init__(colour="Black", action="Wild Draw 4")
-        self.score = 50
-        self.cards_drawn = 4
+        super().__init__(colour="Black", action="Wild Draw 4", score=50, cards_drawn=4)
