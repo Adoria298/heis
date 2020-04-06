@@ -18,8 +18,8 @@ message Card {
     }
     Colour colour = 1;
     Action action = 2;
-    uint32 score = 3;
-    uint32 cards_drawn = 4;
+    uint32 value = 3; // amount added to score by this card. It serves as the value of a NumCard.
+    uint32 cards_to_draw = 4; // cards that the next player has to draw. It should default to 4.
 }
 
 message Player {
@@ -44,5 +44,5 @@ message StateOfPlay {
 service Uno {
     rpc RequestStateOfPlay (Player) returns (StateOfPlay) {}
     rpc PlayCard (Card) returns (StateOfPlay) {}
-    rpc PickUpCard (Player) returns (Card) {}
+    rpc DrawCard (Player) returns (Card) {} // can be sent repeatedly if multiple cards need drawing.
 }
