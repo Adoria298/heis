@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+message Card {
+    enum Colour {
+        RED = 0;
+        BLUE = 1;
+        GREEN = 2;
+        YELLOW = 3;
+        BLACK = 4;
+    }
+    enum Action {
+        NUMBER = 0;
+        REVERSE = 1;
+        DRAW2 = 2;
+        SKIP = 3;
+        WILD = 4;
+        WILD_DRAW4 = 5;
+    }
+    Colour colour = 1;
+    Action action = 2;
+    uint32 score = 3;
+    uint32 cards_drawn = 4;
+}
+
+message Player {
+    repeated Card hand = 5;
+    string name = 6;
+    bool uno_declared = 7;
+    uint32 score = 8;
+
+}
+
+message StateOfPlay {
+    uint32 round_num = 9;
+    repeated Player players= 10;
+    uint32 current_player = 11;
+    repeated Card discard_pile = 12;
+    repeated Card draw_pile = 13;
+    bool round_over = 14;
+    bool game_over = 15;
+}
+
+service Uno {
+    rpc 
+}
