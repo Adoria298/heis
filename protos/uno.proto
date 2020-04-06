@@ -1,3 +1,6 @@
+/* uno.proto
+Protocol Buffers for a GRPC service for the game UNO.
+*/
 syntax = "proto3";
 
 message Card {
@@ -6,7 +9,7 @@ message Card {
         BLUE = 1;
         GREEN = 2;
         YELLOW = 3;
-        BLACK = 4;
+        BLACK = 4; // used for WILD and WILD_DRAW4 cards.
     }
     enum Action {
         NUMBER = 0;
@@ -32,7 +35,7 @@ message Player {
 
 message StateOfPlay {
     uint32 round_num = 9;
-    repeated Player players= 10;
+    repeated Player players= 10;  // a client could use this to cheat... - happens IRL 🤷.
     uint32 current_player = 11;
     repeated Card discard_pile = 12;
     repeated Card draw_pile = 13;
