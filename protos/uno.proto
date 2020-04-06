@@ -40,6 +40,9 @@ message StateOfPlay {
     bool game_over = 15;
 }
 
+
 service Uno {
-    rpc 
+    rpc RequestStateOfPlay (Player) returns (StateOfPlay) {}
+    rpc PlayCard (Card) returns (StateOfPlay) {}
+    rpc PickUpCard (Player) returns (Card) {}
 }
