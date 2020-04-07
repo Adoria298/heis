@@ -22,25 +22,24 @@ message Card {
     Colour colour = 1;
     Action action = 2;
     uint32 value = 3; // amount added to score by this card and the value of a NumCard.
-    uint32 cards_to_draw = 4; // cards that the next player has to draw. It should default to 4.
 }
 
 message Player {
-    repeated Card hand = 5;
-    string name = 6;
-    bool uno_declared = 7;
-    uint32 score = 8;
+    repeated Card hand = 4;
+    string name = 5;
+    bool uno_declared = 6;
+    uint32 score = 7;
 
 }
 
 message StateOfPlay {
-    uint32 round_num = 9;
-    repeated Player players= 10;  // a client could use this to cheat... - happens IRL 🤷.
-    uint32 current_player = 11;
-    repeated Card discard_pile = 12;
-    repeated Card draw_pile = 13;
-    bool round_over = 14;
-    bool game_over = 15;
+    uint32 round_num = 8;
+    repeated Player players= 9;  // a client could use this to cheat... - happens IRL 🤷.
+    uint32 current_player = 10;
+    repeated Card discard_pile = 11;
+    repeated Card draw_pile = 12;
+    bool round_over = 13;
+    bool game_over = 14;
 }
 
 
