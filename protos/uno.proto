@@ -21,7 +21,7 @@ message Card {
     }
     Colour colour = 1;
     Action action = 2;
-    uint32 value = 3; // amount added to score by this card. It serves as the value of a NumCard.
+    uint32 value = 3; // amount added to score by this card and the value of a NumCard.
     uint32 cards_to_draw = 4; // cards that the next player has to draw. It should default to 4.
 }
 
