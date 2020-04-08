@@ -3,24 +3,26 @@ Protocol Buffers for a GRPC service for the game UNO.
 */
 syntax = "proto3";
 
+enum CardColour {
+    RED = 0;
+    BLUE = 1;
+    GREEN = 2;
+    YELLOW = 3;
+    BLACK = 4; // used for WILD and WILD_DRAW4 cards.
+}
+
+enum CardAction {
+    NUMBER = 0;
+    REVERSE = 1;
+    DRAW2 = 2;
+    SKIP = 3;
+    WILD = 4;
+    WILD_DRAW4 = 5;
+}
+
 message Card {
-    enum Colour {
-        RED = 0;
-        BLUE = 1;
-        GREEN = 2;
-        YELLOW = 3;
-        BLACK = 4; // used for WILD and WILD_DRAW4 cards.
-    }
-    enum Action {
-        NUMBER = 0;
-        REVERSE = 1;
-        DRAW2 = 2;
-        SKIP = 3;
-        WILD = 4;
-        WILD_DRAW4 = 5;
-    }
-    Colour colour = 1;
-    Action action = 2;
+    CardColour colour = 1;
+    CardAction action = 2;
     uint32 value = 3; // amount added to score by this card and the value of a NumCard.
 }
 
