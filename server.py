@@ -2,14 +2,15 @@
 Uses code based on protocol buffers file `uno.proto` to create a GRPC server.
 Implements uno_pb2_grpc.UnoServicer and a serve() method, which is then called.
 """
-# stdlib
+# imports
+## stdlib
 from concurrent import futures
-# pip modules
+## pip modules
 import grpc
-# proto3 generated code
+## proto3 generated code
 import uno_pb2
 import uno_pb2_grpc
-# homemade code
+## homemade code
 from deck import Deck
 
 class UnoServicer(uno_pb2_grpc.UnoServicer):
