@@ -1,6 +1,11 @@
 """
 Uses code based on protocol buffers file `uno.proto` to create a GRPC server.
+Implements uno_pb2_grpc.UnoServicer and a serve() method, which is then called.
 """
+# stdlib
+from concurrent import futures
+# pip modules
+import grpc
 # proto3 generated code
 import uno_pb2
 import uno_pb2_grpc
@@ -55,6 +60,16 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         return uno_pb2.Card(colour=3,# green
             action=4, # skip
             value=20)
+
+def serve():
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    uno_pb2_grpc.add_UnoServicer_to_server(UnoServicer, server)
+    server.add_insecure_port("[::]:50051")
+    server.start()
+    try:
+        server.wait_for_termination()
+    except KeyboardInterrupt:
+        print("Ctrl+C pressed. Terminating.")
+
 if __name__ == "__main__":
-    from pprint import pprint
-    pprint(Deck().cards)
+    serve()
