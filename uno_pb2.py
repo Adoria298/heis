@@ -19,94 +19,104 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\tuno.proto\"Q\n\x04\x43\x61rd\x12\x1c\n\x06\x63olour\x18\x01 \x01(\x0e\x32\x0c.Card_Colour\x12\x1c\n\x06\x61\x63tion\x18\x02 \x01(\x0e\x32\x0c.Card_Action\x12\r\n\x05value\x18\x03 \x01(\r\"P\n\x06Player\x12\x13\n\x04hand\x18\x04 \x03(\x0b\x32\x05.Card\x12\x0c\n\x04name\x18\x05 \x01(\t\x12\x14\n\x0cuno_declared\x18\x06 \x01(\x08\x12\r\n\x05score\x18\x07 \x01(\r\"\xb0\x01\n\x0bStateOfPlay\x12\x11\n\tround_num\x18\x08 \x01(\r\x12\x18\n\x07players\x18\t \x03(\x0b\x32\x07.Player\x12\x16\n\x0e\x63urrent_player\x18\n \x01(\r\x12\x1b\n\x0c\x64iscard_pile\x18\x0b \x03(\x0b\x32\x05.Card\x12\x18\n\tdraw_pile\x18\x0c \x03(\x0b\x32\x05.Card\x12\x12\n\nround_over\x18\r \x01(\x08\x12\x11\n\tgame_over\x18\x0e \x01(\x08*B\n\x0b\x43\x61rd_Colour\x12\x07\n\x03RED\x10\x00\x12\x08\n\x04\x42LUE\x10\x01\x12\t\n\x05GREEN\x10\x02\x12\n\n\x06YELLOW\x10\x03\x12\t\n\x05\x42LACK\x10\x04*U\n\x0b\x43\x61rd_Action\x12\n\n\x06NUMBER\x10\x00\x12\x0b\n\x07REVERSE\x10\x01\x12\t\n\x05\x44RAW2\x10\x02\x12\x08\n\x04SKIP\x10\x03\x12\x08\n\x04WILD\x10\x04\x12\x0e\n\nWILD_DRAW4\x10\x05\x32u\n\x03Uno\x12-\n\x12RequestStateOfPlay\x12\x07.Player\x1a\x0c.StateOfPlay\"\x00\x12!\n\x08PlayCard\x12\x05.Card\x1a\x0c.StateOfPlay\"\x00\x12\x1c\n\x08\x44rawCard\x12\x07.Player\x1a\x05.Card\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\tuno.proto\"O\n\x04\x43\x61rd\x12\x1b\n\x06\x63olour\x18\x01 \x01(\x0e\x32\x0b.CardColour\x12\x1b\n\x06\x61\x63tion\x18\x02 \x01(\x0e\x32\x0b.CardAction\x12\r\n\x05value\x18\x03 \x01(\r\"P\n\x06Player\x12\x13\n\x04hand\x18\x04 \x03(\x0b\x32\x05.Card\x12\x0c\n\x04name\x18\x05 \x01(\t\x12\x14\n\x0cuno_declared\x18\x06 \x01(\x08\x12\r\n\x05score\x18\x07 \x01(\r\"\xb0\x01\n\x0bStateOfPlay\x12\x11\n\tround_num\x18\x08 \x01(\r\x12\x18\n\x07players\x18\t \x03(\x0b\x32\x07.Player\x12\x16\n\x0e\x63urrent_player\x18\n \x01(\r\x12\x1b\n\x0c\x64iscard_pile\x18\x0b \x03(\x0b\x32\x05.Card\x12\x18\n\tdraw_pile\x18\x0c \x03(\x0b\x32\x05.Card\x12\x12\n\nround_over\x18\r \x01(\x08\x12\x11\n\tgame_over\x18\x0e \x01(\x08*L\n\nCardColour\x12\t\n\x05WHITE\x10\x00\x12\x07\n\x03RED\x10\x01\x12\x08\n\x04\x42LUE\x10\x02\x12\t\n\x05GREEN\x10\x03\x12\n\n\x06YELLOW\x10\x04\x12\t\n\x05\x42LACK\x10\x05*^\n\nCardAction\x12\x08\n\x04NONE\x10\x00\x12\n\n\x06NUMBER\x10\x01\x12\x0b\n\x07REVERSE\x10\x02\x12\t\n\x05\x44RAW2\x10\x03\x12\x08\n\x04SKIP\x10\x04\x12\x08\n\x04WILD\x10\x05\x12\x0e\n\nWILD_DRAW4\x10\x06\x32u\n\x03Uno\x12-\n\x12RequestStateOfPlay\x12\x07.Player\x1a\x0c.StateOfPlay\"\x00\x12!\n\x08PlayCard\x12\x05.Card\x1a\x0c.StateOfPlay\"\x00\x12\x1c\n\x08\x44rawCard\x12\x07.Player\x1a\x05.Card\"\x00\x62\x06proto3'
 )
 
-_CARD_COLOUR = _descriptor.EnumDescriptor(
-  name='Card_Colour',
-  full_name='Card_Colour',
+_CARDCOLOUR = _descriptor.EnumDescriptor(
+  name='CardColour',
+  full_name='CardColour',
   filename=None,
   file=DESCRIPTOR,
   values=[
     _descriptor.EnumValueDescriptor(
-      name='RED', index=0, number=0,
+      name='WHITE', index=0, number=0,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='BLUE', index=1, number=1,
+      name='RED', index=1, number=1,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='GREEN', index=2, number=2,
+      name='BLUE', index=2, number=2,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='YELLOW', index=3, number=3,
+      name='GREEN', index=3, number=3,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='BLACK', index=4, number=4,
+      name='YELLOW', index=4, number=4,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='BLACK', index=5, number=5,
       serialized_options=None,
       type=None),
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=357,
-  serialized_end=423,
+  serialized_start=355,
+  serialized_end=431,
 )
-_sym_db.RegisterEnumDescriptor(_CARD_COLOUR)
+_sym_db.RegisterEnumDescriptor(_CARDCOLOUR)
 
-Card_Colour = enum_type_wrapper.EnumTypeWrapper(_CARD_COLOUR)
-_CARD_ACTION = _descriptor.EnumDescriptor(
-  name='Card_Action',
-  full_name='Card_Action',
+CardColour = enum_type_wrapper.EnumTypeWrapper(_CARDCOLOUR)
+_CARDACTION = _descriptor.EnumDescriptor(
+  name='CardAction',
+  full_name='CardAction',
   filename=None,
   file=DESCRIPTOR,
   values=[
     _descriptor.EnumValueDescriptor(
-      name='NUMBER', index=0, number=0,
+      name='NONE', index=0, number=0,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='REVERSE', index=1, number=1,
+      name='NUMBER', index=1, number=1,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='DRAW2', index=2, number=2,
+      name='REVERSE', index=2, number=2,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='SKIP', index=3, number=3,
+      name='DRAW2', index=3, number=3,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='WILD', index=4, number=4,
+      name='SKIP', index=4, number=4,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='WILD_DRAW4', index=5, number=5,
+      name='WILD', index=5, number=5,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='WILD_DRAW4', index=6, number=6,
       serialized_options=None,
       type=None),
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=425,
-  serialized_end=510,
+  serialized_start=433,
+  serialized_end=527,
 )
-_sym_db.RegisterEnumDescriptor(_CARD_ACTION)
+_sym_db.RegisterEnumDescriptor(_CARDACTION)
 
-Card_Action = enum_type_wrapper.EnumTypeWrapper(_CARD_ACTION)
-RED = 0
-BLUE = 1
-GREEN = 2
-YELLOW = 3
-BLACK = 4
-NUMBER = 0
-REVERSE = 1
-DRAW2 = 2
-SKIP = 3
-WILD = 4
-WILD_DRAW4 = 5
+CardAction = enum_type_wrapper.EnumTypeWrapper(_CARDACTION)
+WHITE = 0
+RED = 1
+BLUE = 2
+GREEN = 3
+YELLOW = 4
+BLACK = 5
+NONE = 0
+NUMBER = 1
+REVERSE = 2
+DRAW2 = 3
+SKIP = 4
+WILD = 5
+WILD_DRAW4 = 6
 
 
 
@@ -151,7 +161,7 @@ _CARD = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=13,
-  serialized_end=94,
+  serialized_end=92,
 )
 
 
@@ -202,8 +212,8 @@ _PLAYER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=96,
-  serialized_end=176,
+  serialized_start=94,
+  serialized_end=174,
 )
 
 
@@ -275,12 +285,12 @@ _STATEOFPLAY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=179,
-  serialized_end=355,
+  serialized_start=177,
+  serialized_end=353,
 )
 
-_CARD.fields_by_name['colour'].enum_type = _CARD_COLOUR
-_CARD.fields_by_name['action'].enum_type = _CARD_ACTION
+_CARD.fields_by_name['colour'].enum_type = _CARDCOLOUR
+_CARD.fields_by_name['action'].enum_type = _CARDACTION
 _PLAYER.fields_by_name['hand'].message_type = _CARD
 _STATEOFPLAY.fields_by_name['players'].message_type = _PLAYER
 _STATEOFPLAY.fields_by_name['discard_pile'].message_type = _CARD
@@ -288,8 +298,8 @@ _STATEOFPLAY.fields_by_name['draw_pile'].message_type = _CARD
 DESCRIPTOR.message_types_by_name['Card'] = _CARD
 DESCRIPTOR.message_types_by_name['Player'] = _PLAYER
 DESCRIPTOR.message_types_by_name['StateOfPlay'] = _STATEOFPLAY
-DESCRIPTOR.enum_types_by_name['Card_Colour'] = _CARD_COLOUR
-DESCRIPTOR.enum_types_by_name['Card_Action'] = _CARD_ACTION
+DESCRIPTOR.enum_types_by_name['CardColour'] = _CARDCOLOUR
+DESCRIPTOR.enum_types_by_name['CardAction'] = _CARDACTION
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Card = _reflection.GeneratedProtocolMessageType('Card', (_message.Message,), {
@@ -321,8 +331,8 @@ _UNO = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=512,
-  serialized_end=629,
+  serialized_start=529,
+  serialized_end=646,
   methods=[
   _descriptor.MethodDescriptor(
     name='RequestStateOfPlay',
