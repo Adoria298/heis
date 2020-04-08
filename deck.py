@@ -20,14 +20,14 @@ class Deck():
         - 19 Green
         - 19 Red
         - 19 Yellow
-        - 8 Draw Two - 2 of each colour
+        - 8 Draw Two - 2 of each colour (i.e. RGBY)
         - 8 Reverse - 2 of each colour
         - 8 Skip - 2 of each colour
         - 4 Wild
         - 4 Wild Draw Four
 
         The number cards have the numbers 0-9, with 1-9 repeated (i.e. they have two of every number
-        between 0 and 9 except 0, which they only have one of.)
+        between 0 and 9 except 0, which they only have one of.) NB due to using `proto3` as a backend format, cards with a value of 0, of which there are four (one in each colour), do not have a value created in python.
         """
         self.cards = []
         for colour in (uno_pb2.CardColour.Value("RED"), uno_pb2.CardColour.Value("BLUE"), uno_pb2.CardColour.Value("GREEN"), uno_pb2.CardColour.Value("YELLOW")):
