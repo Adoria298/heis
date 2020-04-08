@@ -5,7 +5,8 @@ import uno_pb2 as uno__pb2
 
 
 class UnoStub(object):
-    """Missing associated documentation comment in .proto file"""
+    """where the game is played.
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -31,22 +32,26 @@ class UnoStub(object):
 
 
 class UnoServicer(object):
-    """Missing associated documentation comment in .proto file"""
+    """where the game is played.
+    """
 
     def RequestStateOfPlay(self, request, context):
-        """Missing associated documentation comment in .proto file"""
+        """client updates server on its player and gets a game wide update in return
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def PlayCard(self, request, context):
-        """Missing associated documentation comment in .proto file"""
+        """player wants to play a card, so client sends a card to get an update on the state of play.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def DrawCard(self, request, context):
-        """Missing associated documentation comment in .proto file"""
+        """player can't play or has to pick up, so client requests a card, telling the server who it is so they can check.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -77,7 +82,8 @@ def add_UnoServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class Uno(object):
-    """Missing associated documentation comment in .proto file"""
+    """where the game is played.
+    """
 
     @staticmethod
     def RequestStateOfPlay(request,

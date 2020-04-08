@@ -3,6 +3,7 @@ Protocol Buffers for a GRPC service for the game UNO.
 */
 syntax = "proto3";
 
+// Available colours for cards. NB that WHITE should not be used.
 enum CardColour {
     WHITE = 0; // default value 
     RED = 1;
@@ -12,6 +13,7 @@ enum CardColour {
     BLACK = 5; // used for WILD and WILD_DRAW4 cards.
 }
 
+// Potential actions for cards. All cards have at least one action.
 enum CardAction {
     NONE = 0;
     NUMBER = 1;
@@ -22,12 +24,14 @@ enum CardAction {
     WILD_DRAW4 = 6;
 }
 
+// Focus of the game. A Pile is a list of cards.
 message Card {
     CardColour colour = 1;
     CardAction action = 2;
     uint32 value = 3; // amount added to score by this card and the value of a NumCard.
 }
 
+// Holds a hand (a list of cards), has a name, can declare UNO, and has its score updated at the end of every round.
 message Player {
     repeated Card hand = 4;
     string name = 5;
@@ -36,6 +40,7 @@ message Player {
 
 }
 
+// informs the client everything it needs to know about the state of the game.
 message StateOfPlay {
     uint32 round_num = 8;
     repeated Player players= 9;  // a client could use this to cheat... - happens IRL 🤷.
@@ -46,9 +51,12 @@ message StateOfPlay {
     bool game_over = 14;
 }
 
-
+// where the game is played.
 service Uno {
+    // client updates server on its player and gets a game wide update in return
     rpc RequestStateOfPlay (Player) returns (StateOfPlay) {}
+    // player wants to play a card, so client sends a card to get an update on the state of play.
     rpc PlayCard (Card) returns (StateOfPlay) {}
+    // player can't play or has to pick up, so client requests a card, telling the server who it is so they can check.
     rpc DrawCard (Player) returns (Card) {} // can be sent repeatedly if multiple cards need drawing.
 }
