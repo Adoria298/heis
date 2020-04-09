@@ -17,7 +17,7 @@ me = Player(hand=[Card(colour=5, action=6, value=50) for i in range(7)], # ideal
             uno_declared=False,
             score=0)
 me = stub.AddPlayer(me) # should ruin my dreams/hand
-
+print(me)
 
 print("Getting state.")
 state = stub.RequestStateOfPlay(me)

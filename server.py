@@ -5,6 +5,7 @@ Implements uno_pb2_grpc.UnoServicer and a serve() method, which is then called.
 # imports
 ## stdlib
 from concurrent import futures
+import random
 ## pip modules
 import grpc
 ## proto3 generated code
@@ -15,8 +16,9 @@ from deck import Deck
 
 class UnoServicer(uno_pb2_grpc.UnoServicer):
     def __init__(self):
-        super().__init__(self) # just in case
+        super().__init__() # just in case
         self.deck = Deck().cards
+        random.shuffle(self.deck)
         self.players = []
 
     def RequestStateOfPlay(self, request, context):
@@ -64,8 +66,19 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             action=4, # skip
             value=20)
 
-    def AddPlayer(self, request, context):
-        return request
+    def AddPlayer(self, request, context): # request is a new player
+        print(f"Adding player {request.name}.")
+        if len(self.players) <= 10:
+            hand = []
+            for i in range(7):
+                hand.append(self.deck.pop(i))
+            return uno_pb2.Player(hand=hand,
+                                    name=request.name,
+                                    uno_declared=False,
+                                    score=0)
+
+        else:
+            return uno_pb2.Player(hand=[], name="TOO MANY PLAYERS", uno_declared=True, score=-1)
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
