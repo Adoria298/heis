@@ -14,9 +14,10 @@ import uno_pb2_grpc
 from deck import Deck
 
 class UnoServicer(uno_pb2_grpc.UnoServicer):
-    """
-    Runs the game.
-    """
+    def __init__(self):
+        super().__init__(self) # just in case
+        self.deck = Deck().cards
+        self.players = []
 
     def RequestStateOfPlay(self, request, context):
         print(f"State of Play requested by {request.name}")
@@ -62,6 +63,9 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         return uno_pb2.Card(colour=3,# green
             action=4, # skip
             value=20)
+
+    def AddPlayer(self, request, context):
+        return request
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

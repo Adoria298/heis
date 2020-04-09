@@ -29,6 +29,11 @@ class UnoStub(object):
                 request_serializer=uno__pb2.Player.SerializeToString,
                 response_deserializer=uno__pb2.Card.FromString,
                 )
+        self.AddPlayer = channel.unary_unary(
+                '/Uno/AddPlayer',
+                request_serializer=uno__pb2.Player.SerializeToString,
+                response_deserializer=uno__pb2.Player.FromString,
+                )
 
 
 class UnoServicer(object):
@@ -36,21 +41,30 @@ class UnoServicer(object):
     """
 
     def RequestStateOfPlay(self, request, context):
-        """client updates server on its player and gets a game wide update in return
+        """Client updates server on its player's moves and gets a game wide update in return
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def PlayCard(self, request, context):
-        """player wants to play a card, so client sends a card to get an update on the state of play.
+        """Player wants to play a card, so client sends a card and gets an update on the state of play.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def DrawCard(self, request, context):
-        """player can't play or has to pick up, so client requests a card, telling the server who it is so they can check.
+        """Player can't play or has to pick up, so client requests a card, telling the server who it is so they can check.
+        A client can call this method for as many cards as they need.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def AddPlayer(self, request, context):
+        """A player wants to join, so their client informs the server of who they'd like to be. 
+        The server returns who they actually are.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -73,6 +87,11 @@ def add_UnoServicer_to_server(servicer, server):
                     servicer.DrawCard,
                     request_deserializer=uno__pb2.Player.FromString,
                     response_serializer=uno__pb2.Card.SerializeToString,
+            ),
+            'AddPlayer': grpc.unary_unary_rpc_method_handler(
+                    servicer.AddPlayer,
+                    request_deserializer=uno__pb2.Player.FromString,
+                    response_serializer=uno__pb2.Player.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -130,5 +149,21 @@ class Uno(object):
         return grpc.experimental.unary_unary(request, target, '/Uno/DrawCard',
             uno__pb2.Player.SerializeToString,
             uno__pb2.Card.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def AddPlayer(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Uno/AddPlayer',
+            uno__pb2.Player.SerializeToString,
+            uno__pb2.Player.FromString,
             options, channel_credentials,
             call_credentials, compression, wait_for_ready, timeout, metadata)
