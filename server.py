@@ -43,21 +43,18 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         """
         Plays card `request`. Returns a StateOfPlay message.
 
-        1. Removes card `request` from the current player's hand.
-
-        2. Checks if the card shares a colour, action or value with the previously 
+        1. Checks if the card shares a colour, action or value with the previously 
         played card. If not, checks for a WILD_DRAW4 action, and allows this to 
         be played. If neither check passes, checks for a WHITE NONE card with a 
         negative value, and changes the current player without playing a card 
         (used when all cards that need to be drawn have been drawn). If still 
         no check has passes, raises a ValueError.
 
-        3. Once a card has been played, self.current_player is incremented, or set to 0 if already at len(self.players)-1. 
+        It is the responsibilty of the client to remove the card from the player's hand.
+
+        2. Once a card has been played, self.current_player is incremented, or set to 0 if already at len(self.players)-1. 
         """
-        print(f"{request} played.")
         last_card = self.discard_pile[-1]
-        #current_hand = self.players[self.current_player].hand # not needed yet
-        #current_hand.remove(request)
         if (request.colour == last_card.colour
             or request.action == last_card.action
             or request.value == last_card.value):

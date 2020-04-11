@@ -22,6 +22,6 @@ with grpc.insecure_channel("localhost:50051") as channel:
     print("The Discard Pile:", state.discard_pile)
     print("Your Hand:", me.hand)
     card_index = int(input("Please input the index of the card you would like to play: "))
-    state = stub.PlayCard(me.hand[card_index])
+    state = stub.PlayCard(me.hand.pop(card_index))
     print("The Game:", state)
 
