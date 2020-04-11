@@ -20,7 +20,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         self.draw_pile = Deck().cards
         random.shuffle(self.draw_pile)
         self.players = []
-        self.discard_pile = self.draw_pile[-1]
+        self.discard_pile = [self.draw_pile[-1]]
         self.round_num = 0
         self.round_over = False
         self.game_over = False
@@ -43,18 +43,21 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         """
         Plays card `request`. Returns a StateOfPlay message.
 
-        Checks if the card shares a colour, action or value with the previously 
+        1. Removes card `request` from the current player's hand.
+
+        2. Checks if the card shares a colour, action or value with the previously 
         played card. If not, checks for a WILD_DRAW4 action, and allows this to 
         be played. If neither check passes, checks for a WHITE NONE card with a 
         negative value, and changes the current player without playing a card 
         (used when all cards that need to be drawn have been drawn). If still 
         no check has passes, raises a ValueError.
 
-        Once a card has been played, self.current_player is incremented, or set to 0 if already at len(self.players)-1. 
+        3. Once a card has been played, self.current_player is incremented, or set to 0 if already at len(self.players)-1. 
         """
         print(f"{request} played.")
         last_card = self.discard_pile[-1]
         #current_hand = self.players[self.current_player].hand # not needed yet
+        #current_hand.remove(request)
         if (request.colour == last_card.colour
             or request.action == last_card.action
             or request.value == last_card.value):
@@ -73,6 +76,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             self.current_player = 0
         else:
             self.current_player += 1
+        print(f"{request} played.")
         return uno_pb2.StateOfPlay(**self.get_state_of_play())
 
     def DrawCard(self, request, context):
@@ -108,4 +112,4 @@ if __name__ == "__main__":
     serve()
     # test code
     #s = UnoServicer()
-    #print(s.PlayCard(uno_pb2.Card(colour=3, action=5, value=50), "")) # a wild that changes the colour to green
+    #print(s.RequestStateOfPlay(uno_pb2.Player(hand=[], name="", uno_declared=1, score=1), "")) # an empty Player
