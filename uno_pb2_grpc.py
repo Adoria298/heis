@@ -5,7 +5,7 @@ import uno_pb2 as uno__pb2
 
 
 class UnoStub(object):
-    """where the game is played.
+    """Where the game is played.
     """
 
     def __init__(self, channel):
@@ -34,37 +34,58 @@ class UnoStub(object):
                 request_serializer=uno__pb2.Player.SerializeToString,
                 response_deserializer=uno__pb2.Player.FromString,
                 )
+        self.RemovePlayer = channel.unary_unary(
+                '/Uno/RemovePlayer',
+                request_serializer=uno__pb2.Player.SerializeToString,
+                response_deserializer=uno__pb2.Player.FromString,
+                )
 
 
 class UnoServicer(object):
-    """where the game is played.
+    """Where the game is played.
     """
 
     def RequestStateOfPlay(self, request, context):
-        """Client updates server on its player's moves and gets a game wide update in return
+        """Client updates server on its player's moves and gets a game wide update /// in return.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def PlayCard(self, request, context):
-        """Player wants to play a card, so client sends a card and gets an update on the state of play.
+        """Player wants to play a card, so client sends a card and gets an update 
+        on the state of play.
+        NB this increments the current player, unless the maximum index of 
+        players has been reached, in which case it resets the current player to 
+        0. A WHITE NONE -1 Card can be used to do so without playing a card. 
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def DrawCard(self, request, context):
-        """Player can't play or has to pick up, so client requests a card, telling the server who it is so they can check.
+        """Player can't play or has to pick up, so client requests a card, telling  // the server who it is so they can check.
         A client can call this method for as many cards as they need.
+        Once a client has picked up as many cards as necessary, they must play a 
+        WHITE NONE -1 Card to move play on, unless the player can play a card, 
+        in which case the client plays that card to advance play.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def AddPlayer(self, request, context):
-        """A player wants to join, so their client informs the server of who they'd like to be. 
+        """A player wants to join, so their client informs the server of who they'd 
+        like to be. 
         The server returns who they actually are.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def RemovePlayer(self, request, context):
+        """Allows a player to leave the game. When no player remains, the game ends.
+        Much like Python's list.pop() method this returns the player removed.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -93,6 +114,11 @@ def add_UnoServicer_to_server(servicer, server):
                     request_deserializer=uno__pb2.Player.FromString,
                     response_serializer=uno__pb2.Player.SerializeToString,
             ),
+            'RemovePlayer': grpc.unary_unary_rpc_method_handler(
+                    servicer.RemovePlayer,
+                    request_deserializer=uno__pb2.Player.FromString,
+                    response_serializer=uno__pb2.Player.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
             'Uno', rpc_method_handlers)
@@ -101,7 +127,7 @@ def add_UnoServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class Uno(object):
-    """where the game is played.
+    """Where the game is played.
     """
 
     @staticmethod
@@ -163,6 +189,22 @@ class Uno(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/Uno/AddPlayer',
+            uno__pb2.Player.SerializeToString,
+            uno__pb2.Player.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def RemovePlayer(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Uno/RemovePlayer',
             uno__pb2.Player.SerializeToString,
             uno__pb2.Player.FromString,
             options, channel_credentials,

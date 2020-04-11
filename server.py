@@ -65,7 +65,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
                 self.discard_pile.append(request)
         elif (request.colour == 0 # default colour value - not used in game
             and request.action == 0 # same as above
-            and request.value < 0): # unplayable card
+            and request.value == -1): # unplayable card
                 pass # used to make the game advance, for example when all 
                     # cards needed to be drawn have been drawn.
         else: # if reached here, card can't be played.
@@ -92,9 +92,17 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
                                         uno_declared=False,
                                         score=0)
             self.players.append(new_player)
+            print(f"Added player {new_player.name}")
             return new_player
         else:
             return uno_pb2.Player(hand=[], name="TOO MANY PLAYERS", uno_declared=True, score=-1)
+
+    def RemovePlayer(self, request, context):
+        for i, player in enumerate(self.players):
+            if request == player:
+                print("All players have left.")
+                return self.players.pop(i)
+
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
