@@ -59,9 +59,10 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             or request.action == last_card.action
             or request.value == last_card.value):
                 self.discard_pile.append(request) 
-        elif request.action == uno_pb2.CardAction.Value("WILD_DRAW4"):
-            # TODO: implement checks on if this can be played
-            self.discard_pile.append(request)
+        elif (request.action == uno_pb2.CardAction.Value("WILD_DRAW4")
+            or request.action == uno_pb2.CardAction.Value("WILD")):
+                # TODO: implement checks on if this can be played
+                self.discard_pile.append(request)
         elif (request.colour == 0 # default colour value - not used in game
             and request.action == 0 # same as above
             and request.value < 0): # unplayable card

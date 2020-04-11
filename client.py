@@ -17,11 +17,11 @@ with grpc.insecure_channel("localhost:50051") as channel:
                 uno_declared=False,
                 score=0)
     me = stub.AddPlayer(me) # should ruin my dreams/hand
+    state = stub.RequestStateOfPlay(me) # initial state
     print(f"Welcome, {me.name}.")
-    state = stub.RequestStateOfPlay(me)
-    print("The Discard Pile:", state.discard_pile)
-    print("Your Hand:", me.hand)
-    card_index = int(input("Please input the index of the card you would like to play: "))
-    state = stub.PlayCard(me.hand.pop(card_index))
-    print("The Game:", state)
+    while len(me.hand) > 0:
+        print("The Discard Pile:"); pprint(state.discard_pile)
+        print("Your Hand:"); pprint(me.hand)
+        card_index = int(input("Please input the index of the card you would like to play: "))
+        state = stub.PlayCard(me.hand.pop(card_index))
 
