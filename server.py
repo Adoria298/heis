@@ -40,29 +40,44 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         return uno_pb2.StateOfPlay(**self.get_state_of_play())
     
     def PlayCard(self, request, context):
+        """
+        Plays card `request`. Returns a StateOfPlay message.
+
+        Checks if the card shares a colour, action or value with the previously 
+        played card. If not, checks for a WILD_DRAW4 action, and allows this to 
+        be played. If neither check passes, checks for a WHITE NONE card with a 
+        negative value, and changes the current player without playing a card 
+        (used when all cards that need to be drawn have been drawn). If still 
+        no check has passes, raises a ValueError.
+
+        Once a card has been played, self.current_player is incremented, or set to 0 if already at len(self.players)-1. 
+        """
         print(f"{request} played.")
-        return uno_pb2.StateOfPlay(round_num = 3,
-            players = [uno_pb2.Player(
-                    hand = Deck().cards[:6],
-                    name="Test",
-                    uno_declared = False,
-                    score = 0),
-                uno_pb2.Player(
-                    hand = Deck().cards[7:9],
-                    name="Test 2",
-                    uno_declared = False,
-                    score = 0)],
-            current_player = 1,
-            discard_pile = Deck().cards[8:53],
-            draw_pile = Deck().cards[54:89],
-            round_over = False,
-            game_over = False)
+        last_card = self.discard_pile[-1]
+        #current_hand = self.players[self.current_player].hand # not needed yet
+        if (request.colour == last_card.colour
+            or request.action == last_card.action
+            or request.value == last_card.value):
+                self.discard_pile.append(request) 
+        elif request.action == uno_pb2.CardAction.Value("WILD_DRAW4"):
+            # TODO: implement checks on if this can be played
+            self.discard_pile.append(request)
+        elif (request.colour == 0 # default colour value - not used in game
+            and request.action == 0 # same as above
+            and request.value < 0): # unplayable card
+                pass # used to make the game advance, for example when all 
+                    # cards needed to be drawn have been drawn.
+        else: # if reached here, card can't be played.
+            raise ValueError(f"{request} is not a valid card.")
+        if self.current_player == len(self.players)-1:
+            self.current_player = 0
+        else:
+            self.current_player += 1
+        return uno_pb2.StateOfPlay(**self.get_state_of_play())
 
     def DrawCard(self, request, context):
         print(f"{request.name} wants to draw a card!")
-        return uno_pb2.Card(colour=3,# green
-            action=4, # skip
-            value=20)
+        return self.draw_pile.pop(-1)
 
     def AddPlayer(self, request, context): # request is a new player
         print(f"Adding player {request.name}.")
