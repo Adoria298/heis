@@ -27,6 +27,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         self.current_player = 0
         print("Server started. Waiting for players.")
 
+    # helper funcs
     def get_state_of_play(self):
         return {"round_num": self.round_num,
                 "players": self.players,
@@ -35,6 +36,12 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
                 "draw_pile": self.draw_pile,
                 "round_over": self.round_over,
                 "game_over": self.game_over}
+
+    def increment_current_player(self):
+        if self.current_player == len(self.players)-1:
+            self.current_player = 0
+        else:
+            self.current_player += 1
 
     def RequestStateOfPlay(self, request, context):
         print(f"State of Play requested by {request.name}")
@@ -53,7 +60,14 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
 
         It is the responsibilty of the client to remove the card from the player's hand.
 
-        2. Once a card has been played, self.current_player is incremented, or set to 0 if already at len(self.players)-1. 
+        2. If the card is a SKIP card, then skips the next player by 
+        incrementing self.current_player twice. If the card is a REVERSE card, reverses self.players. If the card is WILD* card, randomises its colour.
+        
+        It is the responsibility of the client to draw the necessary cards on 
+        DRAW* cards.
+
+        3. Once a card has been played, self.current_player is incremented, or 
+        set to 0 if already at len(self.players)-1. 
         """
         last_card = self.discard_pile[-1]
         if (request.colour == last_card.colour
@@ -63,6 +77,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         elif (request.action == uno_pb2.CardAction.Value("WILD_DRAW4")
             or request.action == uno_pb2.CardAction.Value("WILD")):
                 # TODO: implement checks on if this can be played
+                request.colour = random.choice(uno_pb2.CardColour.values())
                 self.discard_pile.append(request)
         elif (request.colour == 0 # default colour value - not used in game
             and request.action == 0 # same as above
@@ -71,12 +86,14 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
                     # cards needed to be drawn have been drawn.
         else: # if reached here, card can't be played.
             raise ValueError(f"{request} is not a valid card.")
-        if self.current_player == len(self.players)-1:
-            self.current_player = 0
-        else:
-            self.current_player += 1
+        self.increment_current_player
+        if request.action == uno_pb2.CardAction.Value("SKIP"):
+            self.increment_current_player() # an extra increment to skip the next player
+        if request.action == uno_pb2.CardAction.Value("REVERSE"):
+            self.players = self.players[::-1] # reverses order of players
         print(f"{request} played.")
         return uno_pb2.StateOfPlay(**self.get_state_of_play())
+
 
     def DrawCard(self, request, context):
         print(f"{request.name} wants to draw a card!")

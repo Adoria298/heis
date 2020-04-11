@@ -13,7 +13,6 @@ import uno_pb2_grpc
 
 #TODO: manage invalid cards
 #TODO: improve output formatting
-#TODO: allow players to leave
 
 name = input("Identify yourself! ")
 
