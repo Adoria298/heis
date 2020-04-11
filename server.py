@@ -25,6 +25,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         self.round_over = False
         self.game_over = False
         self.current_player = 0
+        print("Server started. Waiting for players.")
 
     def get_state_of_play(self):
         return {"round_num": self.round_num,
@@ -115,6 +116,7 @@ def serve():
         print("Ctrl+C pressed. Terminating.")
 
 if __name__ == "__main__":
+    print("Starting server.")
     serve()
     # test code
     #s = UnoServicer()
