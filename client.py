@@ -1,5 +1,24 @@
 """
-Client code for UNO's GRPC server.
+client.py - Basic client code for UNO's GRPC server.
+Copyright (C) <2020>  <Adoria298>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+----
+
+This is not designed to be used by an end user as it is intended for testing the GRPC server itself. As such it is used on the same device as the server.
+It should be a playable game.
 """
 # imports
 ## stdlib
@@ -13,12 +32,13 @@ import uno_pb2_grpc
 
 #TODO: manage invalid cards
 #TODO: improve output formatting
+#TODO: implement drawing cards - mini DSL?
 
 name = input("Identify yourself! ")
 
 with grpc.insecure_channel("localhost:50051") as channel:
     stub = uno_pb2_grpc.UnoStub(channel)
-    me = Player(hand=[Card(colour=5, action=6, value=50) for i in range(7)], # ideal hand
+    me = Player(hand=[Card(colour=5, action=6, value=50) for i in range(7)], # ideal hand - 7 black WILD_DRAW4s
                 name=name,
                 uno_declared=False,
                 score=0)
@@ -32,10 +52,11 @@ with grpc.insecure_channel("localhost:50051") as channel:
                 print("The Discard Pile:"); pprint(state.discard_pile)
                 print("Your Hand:"); pprint(me.hand)
                 card_index = int(input("Please input the index of the card you would like to play: "))
-                state = stub.PlayCard(me.hand.pop(card_index))
+                card = me.hand.pop(card_index)
+                state = stub.PlayCard(card)
             else:
                 print("Someone else is playing right now.")
-                time.sleep(30)
+                time.sleep(30) # 30 seconds feels right - 10 too quick; 60 too slow
                 state = stub.RequestStateOfPlay(me)
     except KeyboardInterrupt:
         print("Ctrl+C pressed. Terminating")

@@ -1,6 +1,26 @@
 """
-Uses code based on protocol buffers file `uno.proto` to create a GRPC server.
-Implements uno_pb2_grpc.UnoServicer and a serve() method, which is then called.
+server.py - GRPC server for UNO.
+Copyright (C) <2020>  <Adoria298>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+----
+
+This uses code based on protocol buffers file `uno.proto` to create a GRPC 
+server.
+It implements uno_pb2_grpc.UnoServicer and a serve() method, which is then 
+called.
 """
 # imports
 ## stdlib
@@ -29,6 +49,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
 
     # helper funcs
     def get_state_of_play(self):
+        "Returns a dictionary with the format defined in `uno.proto`."""
         return {"round_num": self.round_num,
                 "players": self.players,
                 "current_player": self.current_player,
@@ -38,6 +59,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
                 "game_over": self.game_over}
 
     def increment_current_player(self):
+        "Increments self.current_player or resets it to 0 if it equals len(self.player)-1."
         if self.current_player == len(self.players)-1:
             self.current_player = 0
         else:
@@ -94,7 +116,6 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         print(f"{request} played.")
         return uno_pb2.StateOfPlay(**self.get_state_of_play())
 
-
     def DrawCard(self, request, context):
         print(f"{request.name} wants to draw a card!")
         return self.draw_pile.pop(-1)
@@ -123,6 +144,11 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
 
 
 def serve():
+    """
+    Creates a GRPC server and adds UnoServicer to the server.
+    Starts the server on [::]:500051.
+    Catches KeyboardInterrupt to gracefully exit.
+    """
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     uno_pb2_grpc.add_UnoServicer_to_server(UnoServicer(), server)
     server.add_insecure_port("[::]:50051")
@@ -135,6 +161,6 @@ def serve():
 if __name__ == "__main__":
     print("Starting server.")
     serve()
-    # test code
+    # test code - used when client.py returns an _IncativeRpcError, which is overly verbose
     #s = UnoServicer()
     #print(s.RequestStateOfPlay(uno_pb2.Player(hand=[], name="", uno_declared=1, score=1), "")) # an empty Player

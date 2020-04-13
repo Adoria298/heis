@@ -1,7 +1,22 @@
-"Code entirely for making a deck"
+"""
+deck.py - Code entirely for making a deck
+Copyright (C) <year>  <name of author>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 import uno_pb2
-from dataclasses import dataclass
-@dataclass
+
 class Deck():
     """
     Creates a full deck, as described in __init__.
@@ -10,6 +25,7 @@ class Deck():
     deck = Deck().cards
     print(deck)
     ````
+    Only used to store functions together - could be a module.
     """
     def __init__(self):
         """
@@ -43,10 +59,7 @@ class Deck():
             self.cards.append(self.WildCard())
             self.cards.append(self.WildCard(isWildDraw4Card=True))
 
-    def __len__(self):
-        return len(self.cards)
-
-    # card generators
+    # card generators - NOT Python generator functions
     def NumCard(self, colour, value):
         card = uno_pb2.Card()
         card.colour = colour
