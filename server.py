@@ -49,7 +49,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
 
     # helper funcs
     def get_state_of_play(self):
-        "Returns a dictionary with the format defined in `uno.proto`."""
+        "Returns a dictionary with the format defined in `uno.proto`."
         return {"round_num": self.round_num,
                 "players": self.players,
                 "current_player": self.current_player,
