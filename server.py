@@ -139,7 +139,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
     def RemovePlayer(self, request, context):
         for i, player in enumerate(self.players):
             if request == player:
-                print("All players have left.")
+                print(f"{request.name} have left.")
                 return self.players.pop(i)
 
 

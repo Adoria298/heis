@@ -29,6 +29,8 @@ import grpc
 ## proto3 generated modules
 from uno_pb2 import Card, Player
 import uno_pb2_grpc
+# homemade
+import client_cmds
 
 #TODO: manage invalid cards
 #TODO: improve output formatting
@@ -51,9 +53,16 @@ with grpc.insecure_channel("localhost:50051") as channel:
                 print("Your turn!")
                 print("The Discard Pile:"); pprint(state.discard_pile)
                 print("Your Hand:"); pprint(me.hand)
-                card_index = int(input("Please input the index of the card you would like to play: "))
-                card = me.hand.pop(card_index)
-                state = stub.PlayCard(card)
+                #card_index = int(input("Please input the index of the card you would like to play: "))
+                #card = me.hand.pop(card_index)
+                #state = stub.PlayCard(card)
+                try:
+                    cmd, args = input("> ").split()
+                    state = client_cmds.cmds[cmd.upper()](stub, me, args)
+                except Exception as e:
+                    print(f"An error has occured with the input {cmd} {args}.")
+                    print("Details:", e)
+                    print("Please try again.")
             else:
                 print("Someone else is playing right now.")
                 time.sleep(30) # 30 seconds feels right - 10 too quick; 60 too slow
