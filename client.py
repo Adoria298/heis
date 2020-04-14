@@ -26,15 +26,35 @@ from pprint import pprint
 import time
 ## pip modules
 import grpc
+import colorama as c
 ## proto3 generated modules
-from uno_pb2 import Card, Player
+from uno_pb2 import Card, Player, CardColour, CardAction
 import uno_pb2_grpc
 # homemade
 import client_cmds
 
-#TODO: manage invalid cards
-#TODO: improve output formatting
-#TODO: implement drawing cards - mini DSL?
+
+def card_str(card):
+    back_colours = {
+            "RED": c.Back.RED,
+            "BLUE": c.Back.BLUE,
+            "GREEN": c.Back.GREEN,
+            "YELLOW": c.Back.YELLOW,
+            "BLACK": c.Back.BLACK,
+            "WHITE": c.Back.WHITE
+    } # background colours for the cards.
+
+    fmt_string = back_colours[CardColour.Name(card.colour)]
+    
+    if (card.action != CardAction.Value("NUMBER") 
+        and card.action != CardAction.Value("NONE")):
+            fmt_string += CardAction.Name(card.action)
+    else:
+        fmt_string += str(card.value)
+
+    fmt_string += c.Style.RESET_ALL
+
+    return fmt_string
 
 name = input("Identify yourself! ")
 
@@ -51,11 +71,11 @@ with grpc.insecure_channel("localhost:50051") as channel:
         while len(me.hand) > 0:
             if state.players[state.current_player].name == me.name:
                 print("Your turn!")
-                print("The Discard Pile:"); pprint(state.discard_pile)
-                print("Your Hand:"); pprint(me.hand)
-                #card_index = int(input("Please input the index of the card you would like to play: "))
-                #card = me.hand.pop(card_index)
-                #state = stub.PlayCard(card)
+                print("The Last Card Played:")
+                print(card_str(state.discard_pile[-1]))
+                print("Your Hand:") 
+                for card in me.hand: 
+                    print(card_str(card))
                 try:
                     cmd, args = input("> ").split()
                     state = client_cmds.cmds[cmd.upper()](stub, me, args)
