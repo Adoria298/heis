@@ -33,8 +33,13 @@ import uno_pb2_grpc
 # homemade
 import client_cmds
 
-
 def card_str(card):
+    """
+    Takes a `card` (uno_pb2.Card) and returns a string with a background colour.
+    Uses colorama to make ASCII escape sequences work on Windows.
+    The colour is the card's colour, and the string is either the card's action 
+    or the card's value, depending on whether the card is an action card or not.
+    """
     back_colours = {
             "RED": c.Back.RED,
             "BLUE": c.Back.BLUE,
