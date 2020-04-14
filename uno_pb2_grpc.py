@@ -86,6 +86,7 @@ class UnoServicer(object):
     def RemovePlayer(self, request, context):
         """Allows a player to leave the game. When no player remains, the game ends.
         Much like Python's list.pop() method this returns the player removed.
+        The game has to be terminated.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')

@@ -45,7 +45,10 @@ enum CardAction {
 message Card {
     CardColour colour = 1;
     CardAction action = 2;
-    uint32 value = 3; // amount added to score by this card and the value of a NumCard.
+    // amount added to score by this card and the value of a NumCard.
+    // negative values used for special functions.
+    // only the numbers -1 to 9 currently used.
+    sint32 value = 3; 
 }
 
 // Holds a hand (a list of cards), has a name, can declare UNO, and has its // /// score updated at the end of every round.
