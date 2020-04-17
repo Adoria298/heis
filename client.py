@@ -76,21 +76,30 @@ with grpc.insecure_channel("localhost:50051") as channel:
         # main game loop
         while len(me.hand) > 0:
             if state.players[state.current_player].name == me.name:
+                # presentation
                 print("Your turn!")
                 print("The Last Card Played:")
-                last_card = state.discard_pile[-1]
+                if state.discard_pile[-1] == Card(colour=0, action=0, value=-1):
+                    # if cards have just been drawn
+                    last_card = state.discard_pile[-2]
+                else:
+                    last_card = state.discard_pile[-1]
                 print(card_str(last_card))
                 print("Your Hand:") 
                 for card in me.hand: 
                     print(card_str(card), end=" ")
                 print()
-                if last_card.action == CardAction.Value("DRAW2"):
-                    print("You draw two cards because the last player played a +2 card.")
-                    state = client_cmds.draw(stub, me, 2)
-                elif last_card.action == CardAction.Value("WILD_DRAW4"):
-                    print("You draw four cards because the last player played a Wild +4 card.")
-                    state = client_cmds.draw(stub, me, 4)
-                else:
+
+                # player (in)action
+                if (last_card.action == CardAction.Value("DRAW2")
+                    and state.discard_pile[-1] != Card(colour=0, action=0, value=-1)): # checks to prevent +2 infinite loop
+                        print("You draw two cards because the last player played a +2 card.")
+                        state = client_cmds.draw(stub, me, 2)
+                elif (last_card.action == CardAction.Value("WILD_DRAW4")
+                    and state.discard_pile[-1] != Card(colour=0, action=0, value=-1)): # checks to prevent +4 infinite loop
+                        print("You draw four cards because the last player played a Wild +4 card.")
+                        state = client_cmds.draw(stub, me, 4)
+                else: # player can play!
                     try:
                         cmd, args = input("> ").split()
                         state = client_cmds.cmds[cmd.upper()](stub, me, args)
@@ -98,7 +107,7 @@ with grpc.insecure_channel("localhost:50051") as channel:
                         print(f"An error has occured with the input {cmd} {args}.")
                         print("Details:", e)
                         print("Please try again.")
-            else:
+            else: # check again in 30s
                 print("Someone else is playing right now.")
                 time.sleep(30) # 30 seconds feels right - 10 too quick; 60 too slow
                 state = stub.RequestStateOfPlay(me)

@@ -76,9 +76,10 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         1. Checks if the card shares a colour, action or value with the previously 
         played card. If not, checks for a WILD_DRAW4 action, and allows this to 
         be played. If neither check passes, checks for a WHITE NONE card with a 
-        negative value, and changes the current player without playing a card 
-        (used when all cards that need to be drawn have been drawn). If still 
-        no check has passes, raises a ValueError.
+        negative value, and changes the current player and plays this card 
+        (used when all cards that need to be drawn have been drawn). NB when a 
+        WHITE NONE card has been played, it should be omitted in a client's 
+        output. If still no check has passed, raises a ValueError.
 
         It is the responsibilty of the client to remove the card from the player's hand.
 
@@ -104,8 +105,11 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         elif (request.colour == 0 # default colour value - not used in game
             and request.action == 0 # same as above
             and request.value == -1): # unplayable card
-                pass # used to make the game advance, for example when all 
-                    # cards needed to be drawn have been drawn.
+                self.discard_pile.append(request)
+                # used to make the game advance, for example when all 
+                # cards needed to be drawn have been drawn.
+                # still played so clients don't enter an infinite loop of card 
+                # drawing.
         else: # if reached here, card can't be played.
             raise ValueError(f"{request} is not a valid card.")
         self.increment_current_player()
