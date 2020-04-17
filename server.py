@@ -65,6 +65,46 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         else:
             self.current_player += 1
 
+    def check_for_uno_and_win(self):
+        """
+        Checks if a player can declare uno and declares it if they can.
+        At the same time checks if a player has won.
+        If the player has won calls self.someone_won().
+        No parameters, no return value.
+        """
+        for player in self.players:
+            if len(player.hand) == 1:
+                player.uno_declared = True
+            elif len(player.hand) > 1:
+                player.uno_declared = False
+            else: # must be 0
+                self.someone_won()
+
+    def someone_won(self):
+        """
+        Ends the round. Totals player's scores. Checks for game over.
+
+        Game over occurs when a player gains at least 500 points. The player
+        with the least points is the winner. If this has not occured increments 
+        self.round_num and resets all players.
+        """
+        self.round_over = True
+
+        for player in self.players:
+            for card in player.hand:
+                player.score += card.value
+            if player.score > 500:
+                self.game_over = True
+
+        if self.game_over:
+            sorted_players = sorted(self.players, key=lambda p: p.name)
+            self.winner = sorted_players[0]
+        else:
+            self.round_num = 0
+            # reset everything from here.
+
+
+
     def RequestStateOfPlay(self, request, context):
         print(f"State of Play requested by {request.name}")
         return uno_pb2.StateOfPlay(**self.get_state_of_play())
@@ -115,6 +155,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
                 # drawing.
         else: # if reached here, card can't be played.
             raise ValueError(f"{request} is not a valid card.")
+        self.check_for_uno_and_win()
         self.increment_current_player()
         if request.action == uno_pb2.CardAction.Value("SKIP"):
             self.increment_current_player() # an extra increment to skip the next player
