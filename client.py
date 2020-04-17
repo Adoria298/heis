@@ -73,28 +73,40 @@ with grpc.insecure_channel("localhost:50051") as channel:
     state = stub.RequestStateOfPlay(me) # initial state
     print(f"Welcome, {me.name}. I'm sorry I didn't recognise you.")
     try:
+        # main game loop
         while len(me.hand) > 0:
             if state.players[state.current_player].name == me.name:
                 print("Your turn!")
                 print("The Last Card Played:")
-                print(card_str(state.discard_pile[-1]))
+                last_card = state.discard_pile[-1]
+                print(card_str(last_card))
                 print("Your Hand:") 
                 for card in me.hand: 
-                    print(card_str(card))
-                try:
-                    cmd, args = input("> ").split()
-                    state = client_cmds.cmds[cmd.upper()](stub, me, args)
-                except Exception as e:
-                    print(f"An error has occured with the input {cmd} {args}.")
-                    print("Details:", e)
-                    print("Please try again.")
+                    print(card_str(card), end=" ")
+                print()
+                if last_card.action == CardAction.Value("DRAW2"):
+                    print("You draw two cards because the last player played a +2 card.")
+                    state = client_cmds.draw(stub, me, 2)
+                elif last_card.action == CardAction.Value("WILD_DRAW4"):
+                    print("You draw four cards because the last player played a Wild +4 card.")
+                    state = client_cmds.draw(stub, me, 4)
+                else:
+                    try:
+                        cmd, args = input("> ").split()
+                        state = client_cmds.cmds[cmd.upper()](stub, me, args)
+                    except Exception as e:
+                        print(f"An error has occured with the input {cmd} {args}.")
+                        print("Details:", e)
+                        print("Please try again.")
             else:
                 print("Someone else is playing right now.")
                 time.sleep(30) # 30 seconds feels right - 10 too quick; 60 too slow
                 state = stub.RequestStateOfPlay(me)
     except KeyboardInterrupt:
-        print("Ctrl+C pressed. Terminating")
+        print("Ctrl+C pressed.")
     finally:
         # game over
+        print("Terminating.")
         stub.RemovePlayer(me)
+        input("Press enter to exit. ")
 
