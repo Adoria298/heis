@@ -92,7 +92,10 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         3. Once a card has been played, self.current_player is incremented, or 
         set to 0 if already at len(self.players)-1. 
         """
-        last_card = self.discard_pile[-1]
+        if self.discard_pile[-1] == uno_pb2.Card(action=0, colour=0, value=-1):
+            last_card = self.discard_pile[-2]
+        else:
+            last_card = self.discard_pile[-1]
         if (request.colour == last_card.colour
             or request.action == last_card.action
             or request.value == last_card.value):
@@ -145,6 +148,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             if request == player:
                 print(f"{request.name} has left.")
                 return self.players.pop(i)
+        return uno_pb2.Player(name="NOT FOUND.", hand=[], uno_declared=False, score=404)
 
 
 def serve():
