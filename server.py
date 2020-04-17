@@ -108,7 +108,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
                     # cards needed to be drawn have been drawn.
         else: # if reached here, card can't be played.
             raise ValueError(f"{request} is not a valid card.")
-        self.increment_current_player
+        self.increment_current_player()
         if request.action == uno_pb2.CardAction.Value("SKIP"):
             self.increment_current_player() # an extra increment to skip the next player
         if request.action == uno_pb2.CardAction.Value("REVERSE"):
@@ -139,7 +139,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
     def RemovePlayer(self, request, context):
         for i, player in enumerate(self.players):
             if request == player:
-                print(f"{request.name} have left.")
+                print(f"{request.name} has left.")
                 return self.players.pop(i)
 
 
