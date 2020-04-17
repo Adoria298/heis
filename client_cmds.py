@@ -36,6 +36,9 @@ def play(stub, player, *args):
     """
     _help = "Usage: PLAY {index}, eg 'PLAY 2' plays the 3rd card in your hand."
     card = player.hand.pop(int(args[0]))
+    if len(player.hand) == 0:
+        player.uno_declared = True
+        print("You Declared Uno!")
     return stub.PlayCard(card)
 
 def draw(stub, player, *args):
