@@ -1,4 +1,4 @@
-# UnoPy
+# HEIS
 
 Python 3.7 based GRPC multiplayer implementation of "UNO", the hit Mattel card game.
 
