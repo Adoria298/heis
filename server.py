@@ -45,6 +45,8 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         self.round_over = False
         self.game_over = False
         self.current_player = 0
+        self.winner = uno_pb2.Player(name="NONE")
+        self.log = [] # list of log entries
         print("Server started. Waiting for players.")
 
     # helper funcs

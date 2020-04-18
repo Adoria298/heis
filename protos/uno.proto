@@ -69,7 +69,7 @@ message StateOfPlay {
     repeated Card draw_pile = 12;
     bool round_over = 13;
     bool game_over = 14;
-    Player winner = 15; 
+    Player winner = 15; // empty player until winner declared - name="NONE"
 }
 
 // Where clients and servers can both comment.
