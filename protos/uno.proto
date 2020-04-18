@@ -38,7 +38,7 @@ enum CardAction {
     WILD_DRAW4 = 6;
 }
 
-// Focus of the game. A Pile is a list of cards.
+// Focus of the game. A pile is a list of cards.
 // A WHITE NONE card has a special meaning in the code depending on its value:
 //  - value=-1: used in Uno.PlayCard to instruct the server to move play onto 
 //                the next turn after multiple Uno.DrawCard
@@ -60,7 +60,7 @@ message Player {
 
 }
 
-// informs the client everything it needs to know about the state of the game.
+// Informs the client everything it needs to know about the state of the game.
 message StateOfPlay {
     uint32 round_num = 8;
     repeated Player players= 9;  // a client could use this to cheat... - happens IRL 🤷.
@@ -69,13 +69,16 @@ message StateOfPlay {
     repeated Card draw_pile = 12;
     bool round_over = 13;
     bool game_over = 14;
-    uint32 winner = 15; // a 0-indexed index of players - marks the winner at the end.
+    Player winner = 15; 
 }
 
 // Where clients and servers can both comment.
-// Allows 
+// When the server is making an entry, it should use an empty player as the 
+// author, except for the name, which should be "Game". This name will not be 
+// allowed to be used by any other player, a restriction placed by the server.
 message LogEntry {
-    string msg = 15;
+    string msg = 16;
+    Player author = 17;
 }
 
 // Where the game is played.
@@ -103,5 +106,7 @@ service Uno {
     // The game has to be terminated.
     rpc RemovePlayer (Player) returns (Player) {}
     // Lets clients and servers communicate on when to update.
+    // Allows players to communicate with each other and the server to notify 
+    // players of a change.
     rpc GameLog (stream LogEntry) returns (stream LogEntry) {}
 }
