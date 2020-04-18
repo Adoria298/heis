@@ -60,13 +60,16 @@ message Player {
 
 }
 
+// Contains information about the winner and the final ranking.
+// If `round_over` is true the rest of the information should be read.
+// Otherwise, is useless and inaccurate information (only update when game won).
 message WinInfo {
     bool game_over = 8; // if true the rest of this can be read
     repeated Player ranked_players = 9; // first element is the winner
 }
 
 // Informs the client everything it needs to know about the state of the game.
-// NB the first element of players is the current player
+// NB the first element of `players` is the current player.
 message StateOfPlay {
     uint32 round_num = 10;
     repeated Player players= 11;  // a client could use this to cheat... - happens IRL 🤷.
