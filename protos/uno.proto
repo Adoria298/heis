@@ -60,25 +60,20 @@ message Player {
 
 }
 
-// Informs the client everything it needs to know about the state of the game.
-message StateOfPlay {
-    uint32 round_num = 8;
-    repeated Player players= 9;  // a client could use this to cheat... - happens IRL 🤷.
-    uint32 current_player = 10; // 0-indexed index of players
-    repeated Card discard_pile = 11;
-    repeated Card draw_pile = 12;
-    bool round_over = 13;
-    bool game_over = 14;
-    Player winner = 15; // empty player until winner declared - name="NONE"
+message WinInfo {
+    bool game_over = 8; // if true the rest of this can be read
+    repeated Player ranked_players = 9; // first element is the winner
 }
 
-// Where clients and servers can both comment.
-// When the server is making an entry, it should use an empty player as the 
-// author, except for the name, which should be "Game". This name will not be 
-// allowed to be used by any other player, a restriction placed by the server.
-message LogEntry {
-    string msg = 16;
-    Player author = 17;
+// Informs the client everything it needs to know about the state of the game.
+// NB the first element of players is the current player
+message StateOfPlay {
+    uint32 round_num = 10;
+    repeated Player players= 11;  // a client could use this to cheat... - happens IRL 🤷.
+    repeated Card discard_pile = 12;
+    repeated Card draw_pile = 13;
+    bool round_over = 14;
+    WinInfo win_info = 15;
 }
 
 // Where the game is played.
@@ -105,8 +100,4 @@ service Uno {
     // Much like Python's list.pop() method this returns the player removed.
     // The game has to be terminated.
     rpc RemovePlayer (Player) returns (Player) {}
-    // Lets clients and servers communicate on when to update.
-    // Allows players to communicate with each other and the server to notify 
-    // players of a change.
-    rpc GameLog (stream LogEntry) returns (stream LogEntry) {}
 }
