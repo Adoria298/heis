@@ -43,10 +43,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         self.discard_pile = [self.draw_pile[-1]]
         self.round_num = 0
         self.round_over = False
-        self.game_over = False
-        self.current_player = 0
-        self.winner = uno_pb2.Player(name="NONE")
-        self.log = [] # list of log entries
+        self.win_info = uno_pb2.WinInfo(game_over=False, ranked_players=self.players)
         print("Server started. Waiting for players.")
 
     # helper funcs
@@ -54,18 +51,16 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         "Returns a dictionary with the format defined in `uno.proto`."
         return {"round_num": self.round_num,
                 "players": self.players,
-                "current_player": self.current_player,
                 "discard_pile": self.discard_pile,
                 "draw_pile": self.draw_pile,
                 "round_over": self.round_over,
-                "game_over": self.game_over}
+                "win_info": self.win_info}
 
-    def increment_current_player(self):
-        "Increments self.current_player or resets it to 0 if it equals len(self.player)-1."
-        if self.current_player == len(self.players)-1:
-            self.current_player = 0
-        else:
-            self.current_player += 1
+    def cycle_players(self):
+        """"
+        Cycles self.players, i.e. puts 1st at last, 2nd at 1st, 3rd at 2nd etc.
+        """
+        self.players.append(self.players.pop(0))
 
     def check_for_uno_and_win(self):
         """
@@ -96,16 +91,14 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             for card in player.hand:
                 player.score += card.value
             if player.score > 500:
-                self.game_over = True
+                self.win_info.game_over = True
 
-        if self.game_over:
+        if self.win_info.game_over:
             sorted_players = sorted(self.players, key=lambda p: p.name)
-            self.winner = sorted_players[0]
+            self.win_info.ranked_players = sorted_players[0]
         else:
             self.round_num = 0
             # reset everything from here.
-
-
 
     def RequestStateOfPlay(self, request, context):
         print(f"State of Play requested by {request.name}")
@@ -158,9 +151,9 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         else: # if reached here, card can't be played.
             raise ValueError(f"{request} is not a valid card.")
         self.check_for_uno_and_win()
-        self.increment_current_player()
+        self.cycle_players()
         if request.action == uno_pb2.CardAction.Value("SKIP"):
-            self.increment_current_player() # an extra increment to skip the next player
+            self.cycle_players # an extra increment to skip the next player
         if request.action == uno_pb2.CardAction.Value("REVERSE"):
             self.players = self.players[::-1] # reverses order of players
         print(f"{request} played.")

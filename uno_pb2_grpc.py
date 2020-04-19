@@ -39,11 +39,6 @@ class UnoStub(object):
                 request_serializer=uno__pb2.Player.SerializeToString,
                 response_deserializer=uno__pb2.Player.FromString,
                 )
-        self.GameLog = channel.stream_stream(
-                '/Uno/GameLog',
-                request_serializer=uno__pb2.LogEntry.SerializeToString,
-                response_deserializer=uno__pb2.LogEntry.FromString,
-                )
 
 
 class UnoServicer(object):
@@ -97,15 +92,6 @@ class UnoServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GameLog(self, request_iterator, context):
-        """Lets clients and servers communicate on when to update.
-        Allows players to communicate with each other and the server to notify 
-        players of a change.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
 
 def add_UnoServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -133,11 +119,6 @@ def add_UnoServicer_to_server(servicer, server):
                     servicer.RemovePlayer,
                     request_deserializer=uno__pb2.Player.FromString,
                     response_serializer=uno__pb2.Player.SerializeToString,
-            ),
-            'GameLog': grpc.stream_stream_rpc_method_handler(
-                    servicer.GameLog,
-                    request_deserializer=uno__pb2.LogEntry.FromString,
-                    response_serializer=uno__pb2.LogEntry.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -227,21 +208,5 @@ class Uno(object):
         return grpc.experimental.unary_unary(request, target, '/Uno/RemovePlayer',
             uno__pb2.Player.SerializeToString,
             uno__pb2.Player.FromString,
-            options, channel_credentials,
-            call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def GameLog(request_iterator,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.stream_stream(request_iterator, target, '/Uno/GameLog',
-            uno__pb2.LogEntry.SerializeToString,
-            uno__pb2.LogEntry.FromString,
             options, channel_credentials,
             call_credentials, compression, wait_for_ready, timeout, metadata)
