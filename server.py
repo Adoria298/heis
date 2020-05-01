@@ -42,7 +42,6 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         self.players = []
         self.discard_pile = [self.draw_pile[-1]]
         self.round_num = 0
-        self.round_over = False
         self.win_info = WinInfo(game_over=False, ranked_players=self.players)
         print("Server started. Waiting for players.")
 
@@ -53,7 +52,6 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
                 "players": self.players,
                 "discard_pile": self.discard_pile,
                 "draw_pile": self.draw_pile,
-                "round_over": self.round_over,
                 "win_info": self.win_info}
 
     def cycle_players(self):
@@ -79,25 +77,18 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
 
     def someone_won(self):
         """
-        Ends the round. Totals player's scores. Checks for game over.
+        Ends the game. Totals players' scores.
 
-        Game over occurs when a player gains at least 500 points. The player
-        with the least points is the winner. If this has not occured increments 
-        self.round_num and resets all players.
+        Game over occurs when a player has no cards left. The player
+        with the least points is the winner. 
         """
-        self.round_over = True
-
         for player in self.players:
             for card in player.hand:
                 player.score += card.value
             self.win_info.game_over = True
 
-        if self.win_info.game_over:
-            sorted_players = sorted(self.players, key=lambda p: p.score)
-            self.win_info.ranked_players = sorted_players
-        else:
-            self.round_num = 0
-            # reset everything from here.
+        sorted_players = sorted(self.players, key=lambda p: p.score)
+        self.win_info.ranked_players = sorted_players
 
     def RequestStateOfPlay(self, request, context):
         print(f"State of Play requested by {request.name}")

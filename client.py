@@ -29,10 +29,14 @@ from sys import argv
 import grpc
 import colorama as c
 ## proto3 generated modules
-from uno_pb2 import Card, Player, CardColour, CardAction
+from uno_pb2 import Card, Player, CardColour, CardAction, StateOfPlay
 import uno_pb2_grpc
 # homemade
 import client_cmds
+
+#setup
+c.init()
+DEBUG_MODE = False
 
 if len(argv) > 1:
     if argv[1] == "--debug":
@@ -81,14 +85,12 @@ with grpc.insecure_channel("localhost:50051") as channel:
         # main game loop
         while len(me.hand) > 0: # every run of this loop must end with an updated state
             # check for win
-            for player in state.players:
-                if len(player.hand) <= 0:
-                    print(f"{player.name} won.")
-                    break
-                if player.uno_declared:
-                    print(f"{player.name} declared UNO!")
             if state.win_info.game_over:
+                print(f"{state.win_info.ranked_players[0]} won!")
                 break
+            for player in state.players:
+                if player.uno_declared: 
+                    print(f"{player.name} declared UNO!")
             if state.players[0].name == me.name:
                 # presentation
                 print("Your turn!")
@@ -138,6 +140,6 @@ with grpc.insecure_channel("localhost:50051") as channel:
     finally:
         # game over
         print("Terminating.")
-        print(stub.RemovePlayer(me))
+        stub.RemovePlayer(me)
         input("Press enter to exit. ")
 
