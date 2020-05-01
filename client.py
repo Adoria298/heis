@@ -75,15 +75,19 @@ with grpc.insecure_channel("localhost:50051") as channel:
     try:
         # main game loop
         while len(me.hand) > 0:
-            if state.players[state.current_player].name == me.name:
+            if state.players[0].name == me.name:
                 # presentation
                 print("Your turn!")
                 print("The Last Card Played:")
-                if state.discard_pile[-1] == Card(colour=0, action=0, value=-1):
-                    # if cards have just been drawn
-                    last_card = state.discard_pile[-2]
-                else:
-                    last_card = state.discard_pile[-1]
+                # when multiple cards are drawn by multiple players, two cards back is a WHITE NONE -1.
+                index = -1
+                try:
+                    while state.discard_pile[index] == Card(colour=0, action=0, value=-1):
+                        # if cards have just been drawn
+                        index -= 1
+                except IndexError:
+                    index += 1
+                last_card=state.discard_pile[index]
                 print(card_str(last_card))
                 print("Your Hand:") 
                 for card in me.hand: 

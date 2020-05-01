@@ -29,7 +29,7 @@ import random
 ## pip modules
 import grpc
 ## proto3 generated code
-import uno_pb2
+from uno_pb2 import Card, CardAction, CardColour, Player, WinInfo, StateOfPlay
 import uno_pb2_grpc
 ## homemade code
 from deck import Deck
@@ -43,7 +43,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         self.discard_pile = [self.draw_pile[-1]]
         self.round_num = 0
         self.round_over = False
-        self.win_info = uno_pb2.WinInfo(game_over=False, ranked_players=self.players)
+        self.win_info = WinInfo(game_over=False, ranked_players=self.players)
         print("Server started. Waiting for players.")
 
     # helper funcs
@@ -102,7 +102,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
 
     def RequestStateOfPlay(self, request, context):
         print(f"State of Play requested by {request.name}")
-        return uno_pb2.StateOfPlay(**self.get_state_of_play())
+        return StateOfPlay(**self.get_state_of_play())
     
     def PlayCard(self, request, context):
         """
@@ -127,18 +127,22 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         3. Once a card has been played, self.current_player is incremented, or 
         set to 0 if already at len(self.players)-1. 
         """
-        if self.discard_pile[-1] == uno_pb2.Card(action=0, colour=0, value=-1):
-            last_card = self.discard_pile[-2]
-        else:
-            last_card = self.discard_pile[-1]
+        index = -1
+        try:
+            while self.discard_pile[index] == Card(colour=0, action=0, value=-1):
+                # if cards have just been drawn
+                index -= 1
+        except IndexError:
+            index += 1
+        last_card=self.discard_pile[index]
         if (request.colour == last_card.colour
             or request.action == last_card.action
             or request.value == last_card.value):
                 self.discard_pile.append(request) 
-        elif (request.action == uno_pb2.CardAction.Value("WILD_DRAW4")
-            or request.action == uno_pb2.CardAction.Value("WILD")):
+        elif (request.action == CardAction.Value("WILD_DRAW4")
+            or request.action == CardAction.Value("WILD")):
                 # TODO: implement checks on if this can be played
-                request.colour = random.choice(uno_pb2.CardColour.values())
+                request.colour = random.choice(CardColour.values())
                 self.discard_pile.append(request)
         elif (request.colour == 0 # default colour value - not used in game
             and request.action == 0 # same as above
@@ -152,12 +156,12 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             raise ValueError(f"{request} is not a valid card.")
         self.check_for_uno_and_win()
         self.cycle_players()
-        if request.action == uno_pb2.CardAction.Value("SKIP"):
+        if request.action == CardAction.Value("SKIP"):
             self.cycle_players # an extra increment to skip the next player
-        if request.action == uno_pb2.CardAction.Value("REVERSE"):
+        if request.action == CardAction.Value("REVERSE"):
             self.players = self.players[::-1] # reverses order of players
         print(f"{request} played.")
-        return uno_pb2.StateOfPlay(**self.get_state_of_play())
+        return StateOfPlay(**self.get_state_of_play())
 
     def DrawCard(self, request, context):
         print(f"{request.name} wants to draw a card!")
@@ -169,7 +173,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             hand = []
             for i in range(7):
                 hand.append(self.draw_pile.pop(i))
-            new_player = uno_pb2.Player(hand=hand,
+            new_player = Player(hand=hand,
                                         name=request.name,
                                         uno_declared=False,
                                         score=0)
@@ -177,14 +181,15 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             print(f"Added player {new_player.name}")
             return new_player
         else:
-            return uno_pb2.Player(hand=[], name="TOO MANY PLAYERS", uno_declared=True, score=-1)
+            return Player(hand=[], name="TOO MANY PLAYERS", uno_declared=True, score=-1)
 
     def RemovePlayer(self, request, context):
+        print(f"Removing {request.name} from the game.")
         for i, player in enumerate(self.players):
             if request == player:
                 print(f"{request.name} has left.")
                 return self.players.pop(i)
-        return uno_pb2.Player(name="NOT FOUND.", hand=[], uno_declared=False, score=404)
+        return Player(name="NOT FOUND.", hand=[], uno_declared=False, score=404)
 
 
 def serve():
