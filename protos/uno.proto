@@ -78,8 +78,7 @@ message StateOfPlay {
     repeated Player players= 11;  // a client could use this to cheat... - happens IRL 🤷.
     repeated Card discard_pile = 12;
     repeated Card draw_pile = 13;
-    bool round_over = 14;
-    WinInfo win_info = 15;
+    WinInfo win_info = 14;
 }
 
 // Where the game is played.

@@ -85,6 +85,8 @@ with grpc.insecure_channel("localhost:50051") as channel:
                 if len(player.hand) <= 0:
                     print(f"{player.name} won.")
                     break
+                if player.uno_declared:
+                    print(f"{player.name} declared UNO!")
             if state.win_info.game_over:
                 break
             if state.players[0].name == me.name:
@@ -93,7 +95,7 @@ with grpc.insecure_channel("localhost:50051") as channel:
                 print("The Last Card Played:")
                 # when multiple cards are drawn by multiple players, two cards back is a WHITE NONE -1.
                 index = -1
-                try:
+                try: # find the correct index for last_card
                     while state.discard_pile[index] == Card(colour=0, action=0, value=-1):
                         # if cards have just been drawn
                         index -= 1
