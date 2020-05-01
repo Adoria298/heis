@@ -24,6 +24,7 @@ It should be a playable game.
 ## stdlib
 from pprint import pprint
 import time
+from sys import argv
 ## pip modules
 import grpc
 import colorama as c
@@ -32,6 +33,10 @@ from uno_pb2 import Card, Player, CardColour, CardAction
 import uno_pb2_grpc
 # homemade
 import client_cmds
+
+if len(argv) > 1:
+    if argv[1] == "--debug":
+        DEBUG_MODE = True
 
 def card_str(card):
     """
@@ -74,7 +79,14 @@ with grpc.insecure_channel("localhost:50051") as channel:
     print(f"Welcome, {me.name}. I'm sorry I didn't recognise you.")
     try:
         # main game loop
-        while len(me.hand) > 0:
+        while len(me.hand) > 0: # every run of this loop must end with an updated state
+            # check for win
+            for player in state.players:
+                if len(player.hand) <= 0:
+                    print(f"{player.name} won.")
+                    break
+            if state.win_info.game_over:
+                break
             if state.players[0].name == me.name:
                 # presentation
                 print("Your turn!")
@@ -114,13 +126,16 @@ with grpc.insecure_channel("localhost:50051") as channel:
                         print("Please try again.")
             else: # check again in 30s
                 print(f"{state.players[0].name} is playing right now.")
-                time.sleep(30) # 30 seconds feels right - 10 too quick; 60 too slow
+                if not DEBUG_MODE:
+                    time.sleep(30) # 30 seconds feels right - 10 too quick; 60 too slow
+                else: # makes debugging quicker
+                    time.sleep(10)
                 state = stub.RequestStateOfPlay(me)
     except KeyboardInterrupt:
         print("Ctrl+C pressed.")
     finally:
         # game over
         print("Terminating.")
-        stub.RemovePlayer(me)
+        print(stub.RemovePlayer(me))
         input("Press enter to exit. ")
 

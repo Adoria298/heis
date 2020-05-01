@@ -90,11 +90,10 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         for player in self.players:
             for card in player.hand:
                 player.score += card.value
-            if player.score > 500:
-                self.win_info.game_over = True
+            self.win_info.game_over = True
 
         if self.win_info.game_over:
-            sorted_players = sorted(self.players, key=lambda p: p.name)
+            sorted_players = sorted(self.players, key=lambda p: p.score)
             self.win_info.ranked_players = sorted_players
         else:
             self.round_num = 0
