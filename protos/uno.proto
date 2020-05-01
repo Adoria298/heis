@@ -51,7 +51,10 @@ message Card {
     sint32 value = 3; 
 }
 
-// Holds a hand (a list of cards), has a name, can declare UNO, and has its // /// score updated at the end of every round.
+// Holds a hand (a list of cards), has a name, can declare UNO, and has its // 
+// score updated at the end of every round.
+// Players are identified by their name. The server will attempt to guarantee 
+// that names are preserved.
 message Player {
     repeated Card hand = 4;
     string name = 5;

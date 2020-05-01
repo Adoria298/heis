@@ -143,6 +143,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             or request.action == CardAction.Value("WILD")):
                 # TODO: implement checks on if this can be played
                 request.colour = random.choice(CardColour.values())
+                print(request)
                 self.discard_pile.append(request)
         elif (request.colour == 0 # default colour value - not used in game
             and request.action == 0 # same as above
@@ -169,6 +170,9 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
 
     def AddPlayer(self, request, context): # request is a new player
         print(f"Adding player {request.name}.")
+        for player in self.players:
+            if player.name == request.name:
+                raise ValueError("This name has already been taken. Please try again.")
         if len(self.players) <= 10:
             hand = []
             for i in range(7):
@@ -181,15 +185,15 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             print(f"Added player {new_player.name}")
             return new_player
         else:
-            return Player(hand=[], name="TOO MANY PLAYERS", uno_declared=True, score=-1)
+            raise ValueError("There are too many players in this game. Please find a new one.")
 
     def RemovePlayer(self, request, context):
         print(f"Removing {request.name} from the game.")
         for i, player in enumerate(self.players):
-            if request == player:
+            if request.name == player.name:
                 print(f"{request.name} has left.")
                 return self.players.pop(i)
-        return Player(name="NOT FOUND.", hand=[], uno_declared=False, score=404)
+        raise IndexError("The player requested has not been found.")
 
 
 def serve():
