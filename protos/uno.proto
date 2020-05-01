@@ -61,8 +61,8 @@ message Player {
 }
 
 // Contains information about the winner and the final ranking.
-// If `round_over` is true the rest of the information should be read.
-// Otherwise, is useless and inaccurate information (only update when game won).
+// If `game_over` is true the rest of the information should be read.
+// Otherwise, this is useless and inaccurate information (only update when game won).
 message WinInfo {
     bool game_over = 8; // if true the rest of this can be read
     repeated Player ranked_players = 9; // first element is the winner

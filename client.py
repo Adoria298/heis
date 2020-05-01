@@ -91,13 +91,14 @@ with grpc.insecure_channel("localhost:50051") as channel:
                 print()
 
                 # player (in)action
+                last_player = state.players[-1]
                 if (last_card.action == CardAction.Value("DRAW2")
                     and state.discard_pile[-1] != Card(colour=0, action=0, value=-1)): # checks to prevent +2 infinite loop
-                        print("You draw two cards because the last player played a +2 card.")
+                        print(f"You draw two cards because {last_player.name} played a +2 card.")
                         state = client_cmds.draw(stub, me, 2)
                 elif (last_card.action == CardAction.Value("WILD_DRAW4")
                     and state.discard_pile[-1] != Card(colour=0, action=0, value=-1)): # checks to prevent +4 infinite loop
-                        print("You draw four cards because the last player played a Wild +4 card.")
+                        print(f"You draw four cards because {last_player.name} played a Wild +4 card.")
                         state = client_cmds.draw(stub, me, 4)
                 else: # player can play!
                     try:
@@ -108,7 +109,7 @@ with grpc.insecure_channel("localhost:50051") as channel:
                         print("Details:", e)
                         print("Please try again.")
             else: # check again in 30s
-                print("Someone else is playing right now.")
+                print(f"{state.players[0].name} is playing right now.")
                 time.sleep(30) # 30 seconds feels right - 10 too quick; 60 too slow
                 state = stub.RequestStateOfPlay(me)
     except KeyboardInterrupt:

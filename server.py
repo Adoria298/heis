@@ -95,7 +95,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
 
         if self.win_info.game_over:
             sorted_players = sorted(self.players, key=lambda p: p.name)
-            self.win_info.ranked_players = sorted_players[0]
+            self.win_info.ranked_players = sorted_players
         else:
             self.round_num = 0
             # reset everything from here.
