@@ -34,6 +34,9 @@ import uno_pb2_grpc
 # homemade
 import client_cmds
 
+#TODO: prevent cards being unplayable after WILD*
+#TODO: better manage invalid cards - stop them being removed from me.hand.
+
 #setup
 c.init()
 DEBUG_MODE = False
