@@ -157,7 +157,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         self.check_for_uno_and_win()
         self.cycle_players()
         if request.action == CardAction.Value("SKIP"):
-            self.cycle_players # an extra increment to skip the next player
+            self.cycle_players() # an extra increment to skip the next player
         if request.action == CardAction.Value("REVERSE"):
             self.players = self.players[::-1] # reverses order of players
         print(f"{request} played.")
