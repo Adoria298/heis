@@ -39,13 +39,13 @@ enum CardAction {
 }
 
 // Potential errors that can be communicated by the server.
-// These messages are used as the details of an INTERNAL error.
+// These messages are ONLY used as the details of an INTERNAL error.
 // See https://grpc.io/docs/guides/error/ for more information on GRPC errors.
 // NB: The details are present with the richer error model. 
 // I believe, although this has not been tested, if the richer error model is 
 // not availabe in your environment, you instead get a JSON-formatted string 
 // with a `"details"` object. Please confirm this before using it in your code.
-enum ErrorMessages {
+enum ErrorMessage {
     UNKNOWN = 0; 
     PLAYER_NOT_FOUND = 1;
     TOO_MANY_PLAYERS = 2;
