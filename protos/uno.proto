@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 syntax = "proto3";
 
-// Available colours for cards. 
+// Available colours for cards. All cards have a colour.
 enum CardColour {
     WHITE = 0; // default value 
     RED = 1;
@@ -27,7 +27,7 @@ enum CardColour {
     BLACK = 5; // used for WILD and WILD_DRAW4 cards.
 }
 
-// Potential actions for cards. All cards have at least one action.
+// Potential actions for cards. All cards have an action.
 enum CardAction {
     NONE = 0;
     NUMBER = 1;
@@ -38,10 +38,26 @@ enum CardAction {
     WILD_DRAW4 = 6;
 }
 
+// Potential errors that can be communicated by the server.
+// These messages are used as the details of an INTERNAL error.
+// See https://grpc.io/docs/guides/error/ for more information on GRPC errors.
+// NB: The details are present with the richer error model. 
+// I believe, although this has not been tested, if the richer error model is 
+// not availabe in your environment, you instead get a JSON-formatted string 
+// with a `"details"` object. Please confirm this before using it in your code.
+enum ErrorMessages {
+    UNKNOWN = 0; 
+    PLAYER_NOT_FOUND = 1;
+    TOO_MANY_PLAYERS = 2;
+    NAME_TAKEN = 3;
+    CARD_UNPLAYABLE = 4;
+    NO_CARDS = 5;
+}
+
 // Focus of the game. A pile is a list of cards.
 // A WHITE NONE card has a special meaning in the code depending on its value:
 //  - value=-1: used in Uno.PlayCard to instruct the server to move play onto 
-//                the next turn after multiple Uno.DrawCard
+//                the next turn after multiple calls to `rpc Uno.DrawCard`.
 message Card {
     CardColour colour = 1;
     CardAction action = 2;
