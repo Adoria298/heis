@@ -140,6 +140,7 @@ with grpc.insecure_channel("localhost:50051") as channel:
                         print("Please try again.")
             else: # check again in 30s
                 print(f"{state.players[0].name} is playing right now.")
+                # save calls on the server
                 if not DEBUG_MODE:
                     time.sleep(30) # 30 seconds feels right - 10 too quick; 60 too slow
                 else: # makes debugging quicker
