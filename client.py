@@ -127,8 +127,15 @@ with grpc.insecure_channel("localhost:50051") as channel:
                     try:
                         cmd, args = input("> ").split()
                         state = client_cmds.cmds[cmd.upper()](stub, me, args)
+                    except grpc.RpcError as e:
+                        print(f"The following error occured with the input '{cmd} {args}'.")
+                        print(f"Details: \n{e.details()}")
+                        if DEBUG_MODE:
+                            print(f"Status code name: {e.code().name}")
+                            print(f"Status code value: {e.code().value}")
+                        print("Please try again.")
                     except Exception as e:
-                        print(f"An error has occured with the input {cmd} {args}.")
+                        print(f"An error has occured with the input '{cmd} {args}'.")
                         print("Details:", e)
                         print("Please try again.")
             else: # check again in 30s
