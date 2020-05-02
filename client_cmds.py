@@ -22,7 +22,7 @@ all return the StateOfPlay.
 The _help variable in each function provides a helpful message for the user. 
 The docstriing of each function is intended for the programmer.
 """
-import uno_pb2
+import uno_pb2, grpc
 
 def play(stub, player, *args):
     """
@@ -36,10 +36,16 @@ def play(stub, player, *args):
     """
     _help = "Usage: PLAY {index}, eg 'PLAY 2' plays the 3rd card in your hand."
     card = player.hand.pop(int(args[0]))
-    if len(player.hand) == 0:
+    if len(player.hand) == 1:
         player.uno_declared = True
         print("You Declared Uno!")
-    return stub.PlayCard(card)
+    try:
+        return stub.PlayCard(card)
+    except grpc.RpcError as e: # put the card back in your hand then let the client deal with the problem
+        if e.code().name == "INTERNAL":
+            if e.details() == uno_pb2.ErrorMessage.Value("CARD_UNPLAYABLE"):
+                player.hand.append(card)
+        raise e
 
 def draw(stub, player, *args):
     """
