@@ -29,7 +29,7 @@ import random
 ## pip modules
 import grpc
 ## proto3 generated code
-from uno_pb2 import Card, CardAction, CardColour, Player, WinInfo, StateOfPlay
+from uno_pb2 import Card, CardAction, CardColour, Player, WinInfo, StateOfPlay, ErrorMessage
 import uno_pb2_grpc
 ## homemade code
 from deck import Deck
@@ -90,6 +90,17 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         sorted_players = sorted(self.players, key=lambda p: p.score)
         self.win_info.ranked_players = sorted_players
 
+    def raise_internal_error(self, message, context):
+        """
+        Calls context.set_details and context.set_code appropriately.
+        Params:
+            - message: An ErrorMessage name, as defined as the enum ErrorMessage in uno.proto. NB it is converted into the enum here.
+            - context: an RPC context parameter.
+        No return value. The calling function *must* return an empty instance immediately after this is called.
+        """
+        context.set_details(ErrorMessage.Value(message))
+        context.set_code(grpc.StatusCode.INTERNAL)
+
     def RequestStateOfPlay(self, request, context):
         print(f"State of Play requested by {request.name}")
         return StateOfPlay(**self.get_state_of_play())
@@ -133,7 +144,6 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             or request.action == CardAction.Value("WILD")):
                 # TODO: implement checks on if this can be played
                 request.colour = random.choice(CardColour.values())
-                print(request)
                 self.discard_pile.append(request)
         elif (request.colour == 0 # default colour value - not used in game
             and request.action == 0 # same as above
@@ -144,7 +154,8 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
                 # still played so clients don't enter an infinite loop of card 
                 # drawing.
         else: # if reached here, card can't be played.
-            raise ValueError(f"{request} is not a valid card.")
+            self.raise_internal_error("CARD_UNPLAYABLE", context)
+            return StateOfPlay()
         self.check_for_uno_and_win()
         self.cycle_players()
         if request.action == CardAction.Value("SKIP"):
@@ -162,7 +173,8 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         print(f"Adding player {request.name}.")
         for player in self.players:
             if player.name == request.name:
-                raise ValueError("This name has already been taken. Please try again.")
+                self.raise_internal_error("NAME_TAKEN", context)
+                return Player()
         if len(self.players) <= 10:
             hand = []
             for i in range(7):
@@ -175,7 +187,8 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             print(f"Added player {new_player.name}")
             return new_player
         else:
-            raise ValueError("There are too many players in this game. Please find a new one.")
+            self.raise_internal_error("TOO_MANY_PLAYERS", context)
+            return Player()
 
     def RemovePlayer(self, request, context):
         print(f"Removing {request.name} from the game.")
@@ -183,7 +196,8 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             if request.name == player.name:
                 print(f"{request.name} has left.")
                 return self.players.pop(i)
-        raise IndexError("The player requested has not been found.")
+        self.raise_internal_error("PLAYER_NOT_FOUND", context)
+        return Player()
 
 
 def serve():
