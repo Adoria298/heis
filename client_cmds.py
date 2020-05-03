@@ -42,9 +42,8 @@ def play(stub, player, *args):
     try:
         return stub.PlayCard(card)
     except grpc.RpcError as e: # put the card back in your hand then let the client deal with the problem
-        if e.code().name == "INTERNAL":
-            if e.details() == uno_pb2.ErrorMessage.Value("CARD_UNPLAYABLE"):
-                player.hand.append(card)
+        print(e.code())
+        player.hand.append(card)
         raise e
 
 def draw(stub, player, *args):

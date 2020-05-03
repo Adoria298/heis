@@ -36,6 +36,7 @@ import client_cmds
 
 #TODO: prevent cards being unplayable after WILD*
 #TODO: better manage invalid cards - stop them being removed from me.hand.
+#TODO: prevent any random number being played on a number card - even when invalid.
 
 #setup
 c.init()
@@ -89,7 +90,14 @@ with grpc.insecure_channel("localhost:50051") as channel:
                 name=name,
                 uno_declared=False,
                 score=0)
-    me = stub.AddPlayer(me) # should ruin my dreams/hand
+    try:
+        me = stub.AddPlayer(me) # should ruin my dreams/hand
+    except grpc.RpcError as e: # just in case name already taken
+        print("There were so many problems with that name that I'm giving up.")
+        if DEBUG_MODE:
+            print(e.code())
+            print(e.details)
+        quit()
     state = stub.RequestStateOfPlay(me) # initial state
     print(f"Welcome, {me.name}. I'm sorry I didn't recognise you.")
     try:
