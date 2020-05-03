@@ -35,7 +35,6 @@ import uno_pb2_grpc
 import client_cmds
 
 #TODO: prevent cards being unplayable after WILD*
-#TODO: better manage invalid cards - stop them being removed from me.hand.
 #TODO: prevent any random number being played on a number card - even when invalid.
 
 #setup

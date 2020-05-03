@@ -17,6 +17,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 syntax = "proto3";
 
+package heis;
+
 // Available colours for cards. All cards have a colour.
 enum CardColour {
     WHITE = 0; // default value 

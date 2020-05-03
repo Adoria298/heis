@@ -98,8 +98,11 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             - context: an RPC context parameter.
         No return value. The calling function *must* return an empty instance immediately after this is called.
         """
-        context.set_details(ErrorMessage.Value(message))
-        context.set_code(grpc.StatusCode.INTERNAL)
+        if message in [ErrorMessage.Name(m) for m in ErrorMessage.names()]:
+            context.set_details(ErrorMessage.Value(message))
+            context.set_code(grpc.StatusCode.INTERNAL)
+        else:
+            raise ValueError(f"'{message}' is not a valid internal error message'")
 
     def RequestStateOfPlay(self, request, context):
         print(f"State of Play requested by {request.name}")
