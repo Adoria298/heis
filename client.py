@@ -61,19 +61,19 @@ def card_str(card):
             "WHITE": c.Back.WHITE
     } # background colours for the cards.
 
-    action_emoji = {
-        "REVERSE": "🔁",
-        "SKIP": "⏭️",
+    action_symbols = {
+        "REVERSE": "<->",
+        "SKIP": "!X!",
         "DRAW2": "+2",
-        "WILD": "🎨",
-        "WILD_DRAW4": "🎨+4"
+        "WILD": "??",
+        "WILD_DRAW4": "??+4"
     }
 
     fmt_string = back_colours[CardColour.Name(card.colour)]
     
     if (card.action != CardAction.Value("NUMBER") 
         and card.action != CardAction.Value("NONE")):
-            fmt_string += action_emoji[CardAction.Name(card.action)]
+            fmt_string += action_symbols[CardAction.Name(card.action)]
     else:
         fmt_string += str(card.value)
 
