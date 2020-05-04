@@ -94,13 +94,14 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         """
         Calls context.set_details and context.set_code appropriately.
         Params:
-            - message: An ErrorMessage name, as defined as the enum ErrorMessage in uno.proto. NB it is converted into the enum here.
+            - message: An string of an ErrorMessage name, as defined as the enum ErrorMessage in uno.proto. NB it is converted into the enum here.
             - context: an RPC context parameter.
         No return value. The calling function *must* return an empty instance immediately after this is called.
         """
-        if message in [ErrorMessage.Name(m) for m in ErrorMessage.names()]:
-            context.set_details(ErrorMessage.Value(message))
+        if message in [ErrorMessage.Name(m) for m in ErrorMessage.values()]:
+            context.set_details(message)
             context.set_code(grpc.StatusCode.INTERNAL)
+            print(f"A {message} error occured.")
         else:
             raise ValueError(f"'{message}' is not a valid internal error message'")
 
