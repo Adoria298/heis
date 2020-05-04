@@ -100,8 +100,24 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             - If `card` has a `WILD` or `WILD_DRAW4` action. The colour should be changed by the calling function.
             - If `card` is a `WHITE NONE -1` card, of any value. More action may still be required depending on the particular value.
         """
-        def is_wild_valid(card, last_card):
-            return True
+        def is_valid_wild(card, last_card):
+            """
+            Checks if a wild card `card` can be played on card `last_card`.
+            Assumes that `card` is either a WILD or WILD_DRAW4.
+            """
+            if card.action == CardAction.Value("WILD"):
+                return True # simple wilds can always be played
+            elif card.action == CardAction.Value("WILD_DRAW4"):
+                for player_card in self.players[0].hand:
+                    if player_card == card:
+                        next
+                    else:
+                        if self.is_valid_card(card, last_card):
+                            return False
+                return True
+            else:
+                return False # not a WILD
+
         if (card.colour == last_card.colour
             or card.action == last_card.action
             or card.value == last_card.value):
@@ -111,21 +127,20 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
                             return True
                     else: # stops two number cards being played after each other when they're otherwise incompatible.
                         return False
-                elif card.action in [CardAction.Value("REVERSE"), CardAction.Value("DRAW2"), CardAction.Value("SKIP"):
+                elif card.action in [CardAction.Value("REVERSE"), CardAction.Value("DRAW2"), CardAction.Value("SKIP")]:
                     if (card.colour == last_card.colour
                         or card.action == last_card.action):
-                        return True
+                            return True
                     else: # stops two action cards being valid because they share the same value
                         return False
                 else:
                     if card.action in [CardAction.Value("WILD"), CardAction.Value("WILD_DRAW4")]:
-                        return is_wild_valid(card, last_card)
+                        return is_valid_wild(card, last_card)
                     else: # special cards are always valid
                         return True
         elif (card.action == CardAction.Value("WILD_DRAW4")
             or card.action == CardAction.Value("WILD")):
-                # TODO: implement checks on if this can be played
-                return is_wild_valid(card, last_card)
+                return is_valid_wild(card, last_card)
         elif (card.colour == 0 # default colour value - not used in game
             and card.action == 0 # same as above
             and card.value == -1): # unplayable card
