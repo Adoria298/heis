@@ -47,6 +47,9 @@ enum CardAction {
 // I believe, although this has not been tested, if the richer error model is 
 // not availabe in your environment, you instead get a JSON-formatted string 
 // with a `"details"` object. Please confirm this before using it in your code.
+// The error messages below will be given as a string with the name given. They 
+// are defined as an enum to group them together - they will not appear as an 
+// instance of this enum.
 enum ErrorMessage {
     UNKNOWN = 0; 
     PLAYER_NOT_FOUND = 1;

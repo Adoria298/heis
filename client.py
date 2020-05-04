@@ -102,10 +102,6 @@ with grpc.insecure_channel("localhost:50051") as channel:
     try:
         # main game loop
         while len(me.hand) > 0: # every run of this loop must end with an updated state
-            # check for win
-            if state.win_info.game_over:
-                print(f"{state.win_info.ranked_players[0]} won!")
-                break
             for player in state.players:
                 if player.uno_declared: 
                     print(f"{player.name} declared UNO!")
@@ -164,6 +160,13 @@ with grpc.insecure_channel("localhost:50051") as channel:
     except KeyboardInterrupt:
         print("Ctrl+C pressed.")
     finally:
+        state = stub.RequestStateOfPlay(me)
+        if state.win_info.game_over: # see who won
+            winner = state.win_info.ranked_players[0]
+            if winner.name == me.name:
+                print("You won!")
+            else:
+                print(f"{winner.name} won!")
         # game over
         print("Terminating.")
         stub.RemovePlayer(me)

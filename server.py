@@ -85,9 +85,10 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         for player in self.players:
             for card in player.hand:
                 player.score += card.value
-            self.win_info.game_over = True
+        self.win_info.game_over = True
 
         sorted_players = sorted(self.players, key=lambda p: p.score)
+        print(f"{sorted_players[0].name} has won.")
         self.win_info.ranked_players = sorted_players
 
     def raise_internal_error(self, message, context):
@@ -147,7 +148,9 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         elif (request.action == CardAction.Value("WILD_DRAW4")
             or request.action == CardAction.Value("WILD")):
                 # TODO: implement checks on if this can be played
-                request.colour = random.choice(CardColour.values())
+                while (request.colour != CardColour.Value("BLACK") 
+                    or request.colour != CardColour.Value("WHITE")):
+                        request.colour = random.choice(CardColour.values())
                 self.discard_pile.append(request)
         elif (request.colour == 0 # default colour value - not used in game
             and request.action == 0 # same as above
