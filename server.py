@@ -91,6 +91,33 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         print(f"{sorted_players[0].name} has won.")
         self.win_info.ranked_players = sorted_players
 
+    def is_valid_card(self, card, last_card):
+        """
+        Checks if `card` can be played on `last_card`. Both cards are instances of uno_pb2.Card. Returns True or False.
+
+        The following checks are carried out:
+            - If `card` shares a colour, action or value with `last_card`.
+            - If `card` has a `WILD` or `WILD_DRAW4` action. The colour should be changed by the calling function.
+            - If `card` is a `WHITE NONE` card, of any value. More action may still be required depending on the particular value.
+        """
+        if (request.colour == last_card.colour
+            or request.action == last_card.action
+            or request.value == last_card.value):
+                return True
+        elif (request.action == CardAction.Value("WILD_DRAW4")
+            or request.action == CardAction.Value("WILD")):
+                # TODO: implement checks on if this can be played
+                return True
+        elif (request.colour == 0 # default colour value - not used in game
+            and request.action == 0 # same as above
+            and request.value == -1): # unplayable card
+                # used to make the game advance, for example when all 
+                # cards needed to be drawn have been drawn.
+                # still played so clients don't enter an infinite loop of card 
+                # drawing.
+                return True
+
+
     def raise_internal_error(self, message, context):
         """
         Calls context.set_details and context.set_code appropriately.
@@ -114,18 +141,23 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         """
         Plays card `request`. Returns a StateOfPlay message.
 
-        1. Checks if the card shares a colour, action or value with the previously 
-        played card. If not, checks for a WILD_DRAW4 action, and allows this to 
-        be played. If neither check passes, checks for a WHITE NONE card with a 
-        negative value, and changes the current player and plays this card 
-        (used when all cards that need to be drawn have been drawn). NB when a 
-        WHITE NONE card has been played, it should be omitted in a client's 
-        output. If still no check has passed, raises a ValueError.
+        1. Checks if the card shares a colour, action or value with the 
+        previously played card. If not, checks for a WILD_DRAW4 action, and 
+        allows this to be played. If neither check passes, checks for a WHITE 
+        NONE card with a negative value, and changes the current player and 
+        plays this card (used when all cards that need to be drawn have been 
+        drawn). 
+        NB when a WHITE NONE card has been played, it should be omitted in a 
+        client's output. 
+        
+        If no check has yet passed, returns an empty state of play and sets the error code to INTERNAL, with the details to "CARD_UNPLAYABLE".
 
-        It is the responsibilty of the client to remove the card from the player's hand.
+        It is the responsibilty of the client to remove the card from the 
+        player's hand.
 
         2. If the card is a SKIP card, then skips the next player by 
-        incrementing self.current_player twice. If the card is a REVERSE card, reverses self.players. If the card is WILD* card, randomises its colour.
+        incrementing self.current_player twice. If the card is a REVERSE card, 
+        reverses self.players. If the card is WILD* card, randomises its colour.
         
         It is the responsibility of the client to draw the necessary cards on 
         DRAW* cards.
@@ -141,26 +173,9 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         except IndexError:
             index += 1
         last_card=self.discard_pile[index]
-        if (request.colour == last_card.colour
-            or request.action == last_card.action
-            or request.value == last_card.value):
-                self.discard_pile.append(request) 
-        elif (request.action == CardAction.Value("WILD_DRAW4")
-            or request.action == CardAction.Value("WILD")):
-                # TODO: implement checks on if this can be played
-                while (request.colour != CardColour.Value("BLACK") 
-                    or request.colour != CardColour.Value("WHITE")):
-                        request.colour = random.choice(CardColour.values())
-                self.discard_pile.append(request)
-        elif (request.colour == 0 # default colour value - not used in game
-            and request.action == 0 # same as above
-            and request.value == -1): # unplayable card
-                self.discard_pile.append(request)
-                # used to make the game advance, for example when all 
-                # cards needed to be drawn have been drawn.
-                # still played so clients don't enter an infinite loop of card 
-                # drawing.
-        else: # if reached here, card can't be played.
+        if self.is_valid_card(request, last_card):
+            self.discard_pile.append(request)
+        else:
             self.raise_internal_error("CARD_UNPLAYABLE", context)
             return StateOfPlay()
         self.check_for_uno_and_win()
@@ -169,6 +184,11 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             self.cycle_players() # an extra increment to skip the next player
         if request.action == CardAction.Value("REVERSE"):
             self.players = self.players[::-1] # reverses order of players
+        if (request.action == CardAction.Value("WILD_DRAW4") # randomly change colour
+            or request.action == CardAction.Value("WILD")): 
+                while (request.colour != CardColour.Value("BLACK") # default WILD colour
+                    and request.colour != CardColour.Value("WHITE")): # unplayable
+                        request.colour = random.choice(CardColour.values())
         print(f"{request} played.")
         return StateOfPlay(**self.get_state_of_play())
 
