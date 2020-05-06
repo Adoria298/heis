@@ -139,11 +139,15 @@ with grpc.insecure_channel("localhost:50051") as channel:
                         cmd, args = input("> ").split()
                         state = client_cmds.cmds[cmd.upper()](stub, me, args)
                     except grpc.RpcError as e:
-                        print(f"The following error occured with the input '{cmd} {args}'.")
-                        print(f"Details: \n{e.details()}")
-                        if DEBUG_MODE:
-                            print(f"Status code name: {e.code().name}")
-                            print(f"Status code value: {e.code().value}")
+                        if e.details() == "CARD_UNPLAYABLE":
+                            print("You can't play that card.")
+                        else:
+                            print(f"The following error occured with the input '{cmd} {args}'.")
+                            print(f"Details: \n{e.details()}")
+                            if DEBUG_MODE:
+                                print(f"Status code name: {e.code().name}")
+                                print(f"Status code value: {e.code().value}")
+                            print("Please submit a bug report at https://www.github.com/Adoria298/Heis/issues . Ensure you include your entire game, from when you first started your client to this point.")
                         print("Please try again.")
                     except Exception as e:
                         print(f"An error has occured with the input '{cmd} {args}'.")
