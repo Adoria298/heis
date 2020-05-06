@@ -20,7 +20,7 @@ which are always the same, then have *args specific to themselves. They also
 all return the StateOfPlay. 
 
 The _help variable in each function provides a helpful message for the user. 
-The docstriing of each function is intended for the programmer.
+The docstring of each function is intended for the programmer.
 """
 import uno_pb2, grpc
 
