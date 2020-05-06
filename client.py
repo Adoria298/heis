@@ -34,8 +34,7 @@ import uno_pb2_grpc
 # homemade
 import client_cmds
 
-#TODO: prevent cards being unplayable after WILD*
-#TODO: prevent any random number being played on a number card - even when invalid.
+#TODO: Implement multidevice play (LAN)
 
 #setup
 c.init()
