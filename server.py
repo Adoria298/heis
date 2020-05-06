@@ -92,8 +92,9 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         self.win_info.ranked_players = sorted_players
 
     def is_valid_card(self, card, last_card):
-        """
-        Checks if `card` can be played on `last_card`. Both cards are instances of uno_pb2.Card. Returns True or False.
+        """Checks if `card` can be played on `last_card`.
+        
+        Both cards are instances of uno_pb2.Card. Returns True or False.
 
         The following checks are carried out:
             - If `card` shares a colour, action or value with `last_card`.
@@ -101,19 +102,18 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             - If `card` is a `WHITE NONE -1` card, of any value. More action may still be required depending on the particular value.
         """
         def is_valid_wild(card, last_card):
-            """
-            Checks if a wild card `card` can be played on card `last_card`.
+            """Checks if a wild card `card` can be played on card `last_card`.
+
             Assumes that `card` is either a WILD or WILD_DRAW4.
             """
             if card.action == CardAction.Value("WILD"):
                 return True # simple wilds can always be played
             elif card.action == CardAction.Value("WILD_DRAW4"):
                 for player_card in self.players[0].hand:
-                    if player_card == card:
-                        next
-                    else:
-                        if self.is_valid_card(card, last_card):
-                            return False
+                    if player_card.SerializeToString() != card.SerializeToString():
+                        if self.is_valid_card(player_card, last_card):
+                            return False # we only want it to return if another card can be played.
+                    # no action if the player card is the card being tested.
                 return True
             else:
                 return False # not a WILD
@@ -219,8 +219,8 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             self.players = self.players[::-1] # reverses order of players
         if (request.action == CardAction.Value("WILD_DRAW4") # randomly change colour
             or request.action == CardAction.Value("WILD")): 
-                while (request.colour != CardColour.Value("BLACK") # default WILD colour
-                    and request.colour != CardColour.Value("WHITE")): # unplayable
+                while (request.colour == CardColour.Value("BLACK") # default WILD colour
+                    or request.colour == CardColour.Value("WHITE")): # unplayable
                         request.colour = random.choice(CardColour.values())
         print(f"{request} played.")
         return StateOfPlay(**self.get_state_of_play())
