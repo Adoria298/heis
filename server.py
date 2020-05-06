@@ -150,7 +150,6 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
                 # drawing.
                 return True
 
-
     def raise_internal_error(self, message, context):
         """
         Calls context.set_details and context.set_code appropriately.
@@ -168,6 +167,9 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
 
     def RequestStateOfPlay(self, request, context):
         print(f"State of Play requested by {request.name}")
+        for player in self.players:
+            if player.name == request.name:
+                player = request
         return StateOfPlay(**self.get_state_of_play())
     
     def PlayCard(self, request, context):
@@ -183,10 +185,9 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         NB when a WHITE NONE card has been played, it should be omitted in a 
         client's output. 
         
-        If no check has yet passed, returns an empty state of play and sets the error code to INTERNAL, with the details to "CARD_UNPLAYABLE".
+        If no check has yet passed, it returns an empty state of play and sets the error code to INTERNAL, with the details to "CARD_UNPLAYABLE".
 
-        It is the responsibilty of the client to remove the card from the 
-        player's hand.
+        The server will then remove the card from the player's hand it the card can be played.
 
         2. If the card is a SKIP card, then skips the next player by 
         incrementing self.current_player twice. If the card is a REVERSE card, 
@@ -208,6 +209,10 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         last_card=self.discard_pile[index]
         if self.is_valid_card(request, last_card):
             self.discard_pile.append(request)
+            # remove card played from the player's hand
+            for index, card in enumerate(self.players[0].hand):
+                if card == request:
+                    self.players[0].hand.pop(index)
         else:
             self.raise_internal_error("CARD_UNPLAYABLE", context)
             return StateOfPlay()

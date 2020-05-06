@@ -104,7 +104,9 @@ message StateOfPlay {
 
 // Where the game is played.
 service Uno {
-    // Client updates server on its player's moves and gets a game wide update /// in return.
+    // Client updates server on its player's moves and gets a game wide update 
+    // in return. Only `hand` and `uno_declared` may be changed. Clients must 
+    // ensure this is done fairly and legally - no cheating:
     rpc RequestStateOfPlay (Player) returns (StateOfPlay) {}
     // Player wants to play a card, so client sends a card and gets an update 
     // on the state of play.
