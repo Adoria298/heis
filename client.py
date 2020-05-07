@@ -28,6 +28,7 @@ from sys import argv
 ## pip modules
 import grpc
 import colorama as c
+import rich as r
 ## proto3 generated modules
 from uno_pb2 import Card, Player, CardColour, CardAction, StateOfPlay
 import uno_pb2_grpc
