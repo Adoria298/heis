@@ -36,10 +36,11 @@ from uno_pb2 import Card, Player, CardColour, CardAction, StateOfPlay
 import uno_pb2_grpc
 # homemade
 import client_cmds
+from utility import print_card
 
 #TODO: Implement multidevice play (LAN)
 
-#setup
+# setup
 install() # adds rich formatting for errors
 console = Console()
 DEBUG_MODE = False
@@ -48,45 +49,7 @@ if len(argv) > 1:
     if argv[1] == "--debug":
         DEBUG_MODE = True
 
-def card_str(card):
-    """
-    Takes a `card` (uno_pb2.Card) and returns a string and a rich.style.Style.
-    Uses colorama to make ASCII escape sequences work on Windows.
-    The colour is the card's colour, and the string is either the card's action 
-    or the card's value, depending on whether the card is an action card or not.
-    """
-    colours_style  = { # rich.console.Console styles
-            "RED": Style(color="black", bgcolor="red"),
-            "BLUE": Style(color="black", bgcolor="blue"),
-            "GREEN": Style(color="black", bgcolor="green"),
-            "YELLOW": Style(color="black", bgcolor="yellow"),
-            "BLACK": Style(color="white", bgcolor="black"),
-            "WHITE": Style(color="black", bgcolor="white")
-    } # provides background colours for the cards.
-
-    action_symbols = {
-        "REVERSE": "<->",
-        "SKIP": "!X!",
-        "DRAW2": "+2",
-        "WILD": "??",
-        "WILD_DRAW4": "??+4"
-    }
-
-    card_string = ""
-    
-    if (card.action != CardAction.Value("NUMBER") 
-        and card.action != CardAction.Value("NONE")):
-            card_string += action_symbols[CardAction.Name(card.action)]
-    else:
-        card_string += str(card.value)
-
-    return card_string, colours_style[CardColour.Name(card.colour)]
-
-def print_card(card, end="\n"):
-    """Calls card_str() to print and format a card."""
-    card_out = card_str(card) # returns a string and a style 
-    console.print(card_out[0], end=end, style=card_out[1])
-
+# main game
 name = input("Identify yourself! ")
 
 with grpc.insecure_channel("localhost:50051") as channel:
@@ -124,10 +87,10 @@ with grpc.insecure_channel("localhost:50051") as channel:
                 except IndexError:
                     index += 1
                 last_card=state.discard_pile[index]
-                print_card(last_card)
+                print_card(last_card, console)
                 print("Your Hand:") 
                 for card in me.hand:
-                    print_card(card, end=" ")
+                    print_card(card, console, end=" ")
                 print()
 
                 # player (in)action
@@ -163,9 +126,9 @@ with grpc.insecure_channel("localhost:50051") as channel:
             else: # check again in 30s
                 print(f"{state.players[0].name} is playing right now.")
                 # save calls on the server
-                if not DEBUG_MODE:
+                if not DEBUG_MODE: # waiting code
                     time.sleep(30) # 30 seconds feels right - 10 too quick; 60 too slow
-                else: # makes debugging quicker
+                else: # make debugging quicker
                     time.sleep(10)
                 state = stub.RequestStateOfPlay(me)
     except KeyboardInterrupt:
