@@ -27,8 +27,10 @@ import time
 from sys import argv
 ## pip modules
 import grpc
-import colorama as c
-import rich as r
+# rich - terminal support
+from rich.traceback import install # improved traceback formatting
+from rich.console import Console # improved terminal management
+from rich.style import Style # text styles
 ## proto3 generated modules
 from uno_pb2 import Card, Player, CardColour, CardAction, StateOfPlay
 import uno_pb2_grpc
@@ -38,7 +40,8 @@ import client_cmds
 #TODO: Implement multidevice play (LAN)
 
 #setup
-c.init()
+install() # adds rich formatting for errors
+console = Console()
 DEBUG_MODE = False
 
 if len(argv) > 1:
@@ -47,19 +50,19 @@ if len(argv) > 1:
 
 def card_str(card):
     """
-    Takes a `card` (uno_pb2.Card) and returns a string with a background colour.
+    Takes a `card` (uno_pb2.Card) and returns a string and a rich.style.Style.
     Uses colorama to make ASCII escape sequences work on Windows.
     The colour is the card's colour, and the string is either the card's action 
     or the card's value, depending on whether the card is an action card or not.
     """
-    back_colours = {
-            "RED": c.Back.RED,
-            "BLUE": c.Back.BLUE,
-            "GREEN": c.Back.GREEN,
-            "YELLOW": c.Back.YELLOW,
-            "BLACK": c.Back.BLACK,
-            "WHITE": c.Back.WHITE
-    } # background colours for the cards.
+    colours_style  = { # rich.console.Console styles
+            "RED": Style(color="black", bgcolor="red"),
+            "BLUE": Style(color="black", bgcolor="blue"),
+            "GREEN": Style(color="black", bgcolor="green"),
+            "YELLOW": Style(color="black", bgcolor="yellow"),
+            "BLACK": Style(color="white", bgcolor="black"),
+            "WHITE": Style(color="black", bgcolor="white")
+    } # provides background colours for the cards.
 
     action_symbols = {
         "REVERSE": "<->",
@@ -69,17 +72,20 @@ def card_str(card):
         "WILD_DRAW4": "??+4"
     }
 
-    fmt_string = back_colours[CardColour.Name(card.colour)]
+    card_string = ""
     
     if (card.action != CardAction.Value("NUMBER") 
         and card.action != CardAction.Value("NONE")):
-            fmt_string += action_symbols[CardAction.Name(card.action)]
+            card_string += action_symbols[CardAction.Name(card.action)]
     else:
-        fmt_string += str(card.value)
+        card_string += str(card.value)
 
-    fmt_string += c.Style.RESET_ALL
+    return card_string, colours_style[CardColour.Name(card.colour)]
 
-    return fmt_string
+def print_card(card, end="\n"):
+    """Calls card_str() to print and format a card."""
+    card_out = card_str(card) # returns a string and a style 
+    console.print(card_out[0], end=end, style=card_out[1])
 
 name = input("Identify yourself! ")
 
@@ -118,10 +124,10 @@ with grpc.insecure_channel("localhost:50051") as channel:
                 except IndexError:
                     index += 1
                 last_card=state.discard_pile[index]
-                print(card_str(last_card))
+                print_card(last_card)
                 print("Your Hand:") 
-                for card in me.hand: 
-                    print(card_str(card), end=" ")
+                for card in me.hand:
+                    print_card(card, end=" ")
                 print()
 
                 # player (in)action
