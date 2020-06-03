@@ -57,3 +57,5 @@ def print_card(card, console, end="\n"):
     """Calls card_str() to print and format a card."""
     card_out = card_str(card) # returns a string and a style 
     console.print(card_out[0], end=end, style=card_out[1])
+
+BUG_REPORT_STRING = "If you think this is an issue, please submit a bug report at https://www.github.com/Adoria298/Heis/issues. Ensure you include your entire game up to this point, including the method used to start this program."
