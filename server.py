@@ -42,7 +42,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         self.players = []
         self.discard_pile = [self.draw_pile[-1]]
         self.round_num = 0
-        self.win_info = WinInfo(game_over=False, ranked_players=self.players)
+        self.win_info = {"game_over":False, "ranked_players":self.players}
         print("Server started. Waiting for players.")
 
     # helper funcs
@@ -52,7 +52,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
                 "players": self.players,
                 "discard_pile": self.discard_pile,
                 "draw_pile": self.draw_pile,
-                "win_info": self.win_info}
+                "win_info": WinInfo(**self.win_info)}
 
     def cycle_players(self):
         """"
@@ -85,11 +85,11 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         for player in self.players:
             for card in player.hand:
                 player.score += card.value
-        self.win_info.game_over = True
+        self.win_info["game_over"] = True
 
         sorted_players = sorted(self.players, key=lambda p: p.score)
         print(f"{sorted_players[0].name} has won.")
-        self.win_info.ranked_players = sorted_players
+        self.win_info["ranked_players"] = sorted_players
 
     def is_valid_card(self, card, last_card):
         """Checks if `card` can be played on `last_card`.
