@@ -40,4 +40,4 @@ python -m grpc_tools.protoc -I./protos --python_out=. --grpc_python_out=. ./prot
 
 ### `multiplayer-*` Branches
 
-These branches are used to test multiplayer features, and modify the code to work every where. As long as the protocol is not changed, the server can be changed without modifying client code, and vice versa. The `multiplayer-pc` branch is therefore used only to change the server's implementation, and the `multiplayer-rpi` branch for the client's. These should be periodically merged on Github.
+These branches are used to test multiplayer features, and modify the code to work every where. As long as the protocol is not changed, the server can be changed without modifying client code, and vice versa. The `multiplayer-pc` branch is therefore used only to change the server's implementation, and the `multiplayer-rpi` branch for the client's. These should be periodically merged to `multiplayer-all` on Github.

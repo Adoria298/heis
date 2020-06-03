@@ -36,7 +36,7 @@ from uno_pb2 import Card, Player, CardColour, CardAction, StateOfPlay
 import uno_pb2_grpc
 # homemade
 import client_cmds
-from utility import print_card
+from utility import print_card, BUG_REPORT_STRING
 
 #TODO: Implement multidevice play (LAN)
 
@@ -116,12 +116,12 @@ with grpc.insecure_channel("localhost:50051") as channel:
                             if DEBUG_MODE:
                                 print(f"Status code name: {e.code().name}")
                                 print(f"Status code value: {e.code().value}")
-                            print("Please submit a bug report at https://www.github.com/Adoria298/Heis/issues . Ensure you include your entire game, from when you first started your client to this point.")
+                            print(BUG_REPORT_STRING)
                         print("Please try again.")
                     except Exception as e:
                         print(f"An error has occured with the input '{cmd} {args}'.")
                         print("Details:", e)
-                        print("Please submit a bug report at https://www.github.com/Adoria298/Heis/issues . Ensure you include your entire game, from when you first started your client to this point.")
+                        print(BUG_REPORT_STRING)
                         print("Please try again.")
             else: # check again in 30s
                 print(f"{state.players[0].name} is playing right now.")
