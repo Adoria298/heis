@@ -38,6 +38,6 @@ If you make changes to `protos/uno.proto`, the compilation command is:
 python -m grpc_tools.protoc -I./protos --python_out=. --grpc_python_out=. ./protos/uno.proto
 ```
 
-### `multiplayer-*` Branches
+### Changing server or client code.
 
-These branches are used to test multiplayer features, and modify the code to work every where. As long as the protocol is not changed, the server can be changed without modifying client code, and vice versa. The `multiplayer-pc` branch is therefore used only to change the server's implementation, and the `multiplayer-rpi` branch for the client's. These should be periodically merged to `multiplayer-all` on Github.
+As long as the protocol is not changed, the server can be changed without modifying client code, and vice versa. Even how the server implements the protocol can be changed. However, do not restart the server during the middle of a game, as this will destroy the game and the clients may crash when they request the State of Play. You would have to sync these requests **and** restart the server when no one is requesting **and** add all the players back in the same order **and** shuffle the cards exactly the same to ensure no one noticed you taking the server down. It's not impossible, but it would require a lot of code to do this correctly.
