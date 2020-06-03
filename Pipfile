@@ -7,7 +7,6 @@ verify_ssl = true
 
 [packages]
 rich = "*"
-grpc = "*"
 grpcio = "*"
 grpcio-tools = "*"
 
