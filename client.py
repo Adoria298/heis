@@ -73,7 +73,7 @@ with grpc.insecure_channel(HOST_IP) as channel:
             print(e.details)
         quit()
     state = stub.RequestStateOfPlay(me)  # initial state
-    print(f"Welcome, {me.name}. I'm sorry I didn't recognise you.")
+    print(f"Welcome, {me.name}, to HEIS. I'm sorry I didn't recognise you.")
     try:
         # main game loop
         while len(me.hand) > 0:  # every run of this loop must end with an updated state
