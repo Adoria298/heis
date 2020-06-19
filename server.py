@@ -28,11 +28,17 @@ from concurrent import futures
 import random
 ## pip modules
 import grpc
+import rich.traceback # for logs
+import rich.console
 ## proto3 generated code
 from uno_pb2 import Card, CardAction, CardColour, Player, WinInfo, StateOfPlay, ErrorMessage
 import uno_pb2_grpc
 ## homemade code
 from deck import Deck
+from utility import print_card # for logs
+
+rich.traceback.install() # adds coloured error messages
+rich_out_con = rich.console.Console()
 
 class UnoServicer(uno_pb2_grpc.UnoServicer):
     def __init__(self):
@@ -59,6 +65,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         Cycles self.players, i.e. puts 1st at last, 2nd at 1st, 3rd at 2nd etc.
         """
         self.players.append(self.players.pop(0))
+        print(f"Players cycled. Next player: {self.players[0]}")
 
     def check_for_uno_and_win(self):
         """
@@ -67,6 +74,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         If the player has won calls self.someone_won().
         No parameters, no return value.
         """
+        print("Checking for UNO and for wins")
         for player in self.players:
             if len(player.hand) == 1:
                 player.uno_declared = True
@@ -227,12 +235,16 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
                 while (request.colour == CardColour.Value("BLACK") # default WILD colour
                     or request.colour == CardColour.Value("WHITE")): # unplayable
                         request.colour = random.choice(CardColour.values())
-        print(f"{request} played.")
+        print(f"{print_card(request, rich_out_con)} played.")
         return StateOfPlay(**self.get_state_of_play())
 
     def DrawCard(self, request, context):
         print(f"{request.name} wants to draw a card!")
-        return self.draw_pile.pop(-1)
+        drawn_card = self.draw_pile.pop(-1)
+        print(f"Given {request.name} the following card: ", end="")
+        print_card(drawn_card, rich_out_con)
+        self.check_for_uno_and_win()
+        return drawn_card
 
     def AddPlayer(self, request, context): # request is a new player
         print(f"Adding player {request.name}.")
@@ -259,7 +271,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         print(f"Removing {request.name} from the game.")
         for i, player in enumerate(self.players):
             if request.name == player.name:
-                print(f"{request.name} has left.")
+                print(f"{request.name} has been removed.")
                 return self.players.pop(i)
         self.raise_internal_error("PLAYER_NOT_FOUND", context)
         return Player()
