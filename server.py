@@ -52,6 +52,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
         print("Server started. Waiting for players.")
 
     # helper funcs
+    ## game helpers
     def get_state_of_play(self):
         "Returns a dictionary with the format defined in `uno.proto`."
         return {"round_num": self.round_num,
@@ -159,6 +160,7 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
                 # drawing.
                 return True
 
+    ## utility - server side only 
     def raise_internal_error(self, message, context):
         """
         Calls context.set_details and context.set_code appropriately.
@@ -173,7 +175,8 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             print(f"A {message} error occured.")
         else:
             raise ValueError(f"'{message}' is not a valid internal error message'")
-
+    
+    # service Uno RPCs
     def RequestStateOfPlay(self, request, context):
         print(f"State of Play requested by {request.name}.")
         for player in self.players:
