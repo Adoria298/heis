@@ -19,3 +19,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 Create an Instance of Heis_GUI to start the GUI. When called does so 
 automatically.
 """
+# imports
+## stdlib
+from tkinter import *
+from tkinter.ttk import *
+## pip
+## homemade

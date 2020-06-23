@@ -21,24 +21,22 @@ This is not designed to be used by an end user as it is intended for testing the
 It should be a playable game.
 """
 # imports
-# stdlib
+## stdlib
 from pprint import pprint
 import time
 from sys import argv
-# pip modules
+## pip modules
 import grpc
-# rich - terminal support
+### rich - terminal support
 from rich.traceback import install  # improved traceback formatting
 from rich.console import Console  # improved terminal management
 from rich.style import Style  # text styles
-# proto3 generated modules
+## proto3 generated modules
 from uno_pb2 import Card, Player, CardColour, CardAction, StateOfPlay
 import uno_pb2_grpc
-# homemade
+## homemade
 import client_cmds
 from utility import print_card, BUG_REPORT_STRING
-
-# TODO: Implement multidevice play (LAN)
 
 # setup
 install()  # adds rich formatting for errors
