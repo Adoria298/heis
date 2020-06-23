@@ -1,5 +1,5 @@
 """
-Package heis.client - 
+Package heis.client - An example client for HEIS' server.
 Copyright (C) <2020>  <Adoria298>
 
 This program is free software: you can redistribute it and/or modify

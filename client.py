@@ -35,7 +35,7 @@ from rich.style import Style  # text styles
 from uno_pb2 import Card, Player, CardColour, CardAction, StateOfPlay
 import uno_pb2_grpc
 ## homemade
-import client_cmds
+import client.cmds
 from utility import print_card, BUG_REPORT_STRING
 
 # setup
@@ -71,7 +71,7 @@ with grpc.insecure_channel(HOST_IP) as channel:
             print(e.details)
         quit()
     state = stub.RequestStateOfPlay(me)  # initial state
-    print(f"Welcome, {me.name}, to HEIS. I'm sorry I didn't recognise you.")
+    print(f"Welcome to HEIS, {me.name}. I'm sorry I didn't recognise you.")
     try:
         # main game loop
         while len(me.hand) > 0:  # every run of this loop must end with an updated state
@@ -103,16 +103,16 @@ with grpc.insecure_channel(HOST_IP) as channel:
                         and state.discard_pile[-1] != Card(colour=0, action=0, value=-1)):  # checks to prevent +2 infinite loop
                     print(
                         f"You draw two cards because {last_player.name} played a +2 card.")
-                    state = client_cmds.draw(stub, me, 2)
+                    state = client.cmds.draw(stub, me, 2)
                 elif (last_card.action == CardAction.Value("WILD_DRAW4")
                       and state.discard_pile[-1] != Card(colour=0, action=0, value=-1)):  # checks to prevent +4 infinite loop
                     print(
                         f"You draw four cards because {last_player.name} played a Wild +4 card.")
-                    state = client_cmds.draw(stub, me, 4)
+                    state = client.cmds.draw(stub, me, 4)
                 else:  # player can play!
                     try:
                         cmd, args = input("> ").split()
-                        state = client_cmds.cmds[cmd.upper()](stub, me, args)
+                        state = client.cmds.cmds[cmd.upper()](stub, me, args)
                     except grpc.RpcError as e:
                         if e.details() == "CARD_UNPLAYABLE":
                             print("You can't play that card.")
