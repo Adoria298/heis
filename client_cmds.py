@@ -15,6 +15,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+---
+
 All functions in this file have two mandatory parameters (stub and player), 
 which are always the same, then have *args specific to themselves. They also 
 all return the StateOfPlay. 

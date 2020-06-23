@@ -1,5 +1,5 @@
 """
-utility.py - Utility code for UNO's GRPC serve, mainly related to presentation.
+utility.py - Code shared between both the client and the server.
 Copyright (C) <2020>  <Adoria298>
 
 This program is free software: you can redistribute it and/or modify

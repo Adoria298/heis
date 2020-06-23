@@ -1,5 +1,5 @@
 """
-client.py - Basic client code for UNO's GRPC server.
+client.py - Basic client code for HEIS's GRPC server.
 Copyright (C) <2020>  <Adoria298>
 
 This program is free software: you can redistribute it and/or modify
