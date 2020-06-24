@@ -52,7 +52,8 @@ class Backend():
         return self.state
 
     def play_card(self, index):
-        self.state = self.stub.PlayCard(self.me.hand[index])
+        card = self.me.hand.pop(index)
+        self.state = self.stub.PlayCard(card)
         return self.state
 
     def draw_card(self, amount):
@@ -63,3 +64,13 @@ class Backend():
         self.me = self.stub.RemovePlayer(self.me)
         return True
     
+    @property
+    def state(self):
+        return self._state
+
+    @state.setter
+    def set_state(self, value):
+        self._state = value
+        for player in self.state.players:
+            if player.name == self.me.name:
+                self.me = player
