@@ -34,7 +34,7 @@ class Backend():
     
     def add_me_to_game(self):
         try:
-            self.stub.AddPlayer(self.me)
+            self.me = self.stub.AddPlayer(self.me)
         except grpc.RpcError as e:
             if e.code() == grpc.StatusCode.INTERNAL:
                 if e.details() in ("UNKNOWN", "TOO_MANY_PLAYERS", "NAME_TAKEN"):
@@ -43,3 +43,23 @@ class Backend():
                     raise e
             else:
                 raise e
+
+    def get_player(self):
+        return self.me
+
+    def get_state_of_play(self):
+        self.state = self.stub.RequestStateOfPlay(self.me)
+        return self.state
+
+    def play_card(self, index):
+        self.state = self.stub.PlayCard(self.me.hand[index])
+        return self.state
+
+    def draw_card(self, amount):
+        for i in range(amount):
+            self.me.hand.append(self.stub.DrawCard(self.me))
+    
+    def leave_game(self):
+        self.me = self.stub.RemovePlayer(self.me)
+        return True
+    
