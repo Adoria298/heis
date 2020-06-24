@@ -53,7 +53,22 @@ class Backend():
 
     def play_card(self, index):
         card = self.me.hand.pop(index)
-        self.state = self.stub.PlayCard(card)
+        try:
+            self.state = self.stub.PlayCard(card)
+        except grpc.RpcError as e:
+            if e.code() == grpc.StatusCode.INTERNAL:
+                if e.details() in ("UNKNOWN", "CARD_UNPLAYABLE"):
+                    self.me.hand.append(card)
+                    raise ValueError(e.details())
+                else:
+                    raise e
+            else:
+                raise e
+        except Exception as e:
+            print("The following exception was caught when playing a card.")
+            print(e)
+            print("Card returned to hand.")
+            self.me.hand.append(card)
         return self.state
 
     def draw_card(self, amount):
