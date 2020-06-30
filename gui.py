@@ -37,6 +37,7 @@ class CardDisplay(Frame):
         self.hand = hand
         self.card_btns = []
         self.draw_widgets()
+        self.pack()
     
     def draw_widgets(self):
         for card in self.hand:
