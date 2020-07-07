@@ -26,7 +26,7 @@ from tkinter.ttk import *
 ## pip
 ## homemade
 ### protoc generated
-from uno_pb2 import Card, CardColour
+from uno_pb2 import Card, CardColour, CardAction
 
 class CardDisplay(Frame):
     """
@@ -49,6 +49,7 @@ class CardDisplay(Frame):
         s.configure("White.TButton", background="white")
         for card in self.hand:
             btn = Button(master=self)
+            # colours - changes the default style
             if card.colour == CardColour.Value("RED"):
                 btn["style"] = "Red.TButton"
             elif card.colour == CardColour.Value("GREEN"):
@@ -61,7 +62,23 @@ class CardDisplay(Frame):
                 btn["style"] = "Black.TButton"
             elif card.colour == CardColour.Value("WHITE"):
                 btn["style"] = "White.TButton"
-            btn["text"] = str(card.value)
+
+            # actions
+            if card.action == CardAction.Value("NUMBER") or card.action == CardAction.Value("NONE"):
+                btn["text"] = str(card.value)
+            elif card.action == CardAction.Value("REVERSE"):
+                btn["text"] = "<->"
+            elif card.action == CardAction.Value("DRAW2"):
+                btn["text"] = "+2"
+            elif card.action == CardAction.Value("SKIP"):
+                btn["text"] = "!X!"
+            elif card.action == CardAction.Value("WILD"):
+                btn["text"] = "??"
+            elif card.action == CardAction.Value("WILD_DRAW4"):
+                btn["text"] = "??+4"
+            else:
+                btn["text"] = str(card)
+
             btn.pack()
             self.card_btns.append(btn)
 
