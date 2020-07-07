@@ -26,7 +26,7 @@ from tkinter.ttk import *
 ## pip
 ## homemade
 ### protoc generated
-from uno_pb2 import Card
+from uno_pb2 import Card, CardColour
 
 class CardDisplay(Frame):
     """
@@ -40,8 +40,28 @@ class CardDisplay(Frame):
         self.pack()
     
     def draw_widgets(self):
+        s = Style(self)
+        s.configure("Red.TButton", background="red")
+        s.configure("Green.TButton", background="green")
+        s.configure("Yellow.TButton", background="yellow")
+        s.configure("Blue.TButton", background="blue")
+        s.configure("Black.TButton", background="black")
+        s.configure("White.TButton", background="white")
         for card in self.hand:
-            btn = Button(self, text=str(card))
+            btn = Button(master=self)
+            if card.colour == CardColour.Value("RED"):
+                btn["style"] = "Red.TButton"
+            elif card.colour == CardColour.Value("GREEN"):
+                btn["style"] = "Green.TButton"
+            elif card.colour == CardColour.Value("YELLOW"):
+                btn["style"] = "Yellow.TButton"
+            elif card.colour == CardColour.Value("BLUE"):
+                btn["style"] = "Blue.TButton"
+            elif card.colour == CardColour.Value("BLACK"):
+                btn["style"] = "Black.TButton"
+            elif card.colour == CardColour.Value("WHITE"):
+                btn["style"] = "White.TButton"
+            btn["text"] = str(card.value)
             btn.pack()
             self.card_btns.append(btn)
 
