@@ -28,12 +28,12 @@ from tkinter.ttk import *
 ### protoc generated
 from uno_pb2 import Card, CardColour, CardAction
 
-class CardDisplay(Frame):
+class CardDisplay(LabelFrame):
     """
     tkinter.ttk.Frame that draws a player's hand.
     """
-    def __init__(self, master, hand, **kw):
-        super().__init__(master, **kw)
+    def __init__(self, master, label, hand, **kw):
+        super().__init__(master, text=label, **kw)
         self.hand = hand
         self.card_btns = []
         self.draw_widgets()
@@ -82,10 +82,20 @@ class CardDisplay(Frame):
             btn.pack()
             self.card_btns.append(btn)
 
+class MainWindow(Tk):
+
+    def __init__(self):
+        super().__init__()
+        self.title("HEIS")
+        self.cd = CardDisplay(self, "Your Hand", hand=[Card(colour=4, action=3, value=20), Card(colour=1, action=6, value=50), Card(colour=5, action=2, value=20)])
+
 if __name__ == "__main__":
     # testing code
     ## CardDisplay
-    cd1_root = Tk()
-    cd1_root.title("Test 1: CardDisplay")
-    cd = CardDisplay(cd1_root, [Card(colour=4, action=3, value=20), Card(colour=1, action=6, value=50), Card(colour=5, action=2, value=20)])
-    cd1_root.mainloop()
+    #cd1_root = Tk()
+    #cd1_root.title("Test 1: CardDisplay")
+    #cd = CardDisplay(cd1_root, label="Your Hand:", hand=[Card(colour=4, action=3, value=20), Card(colour=1, action=6, value=50), Card(colour=5, action=2, value=20)])
+    #cd1_root.mainloop()
+    ## MainFrame
+    root = MainWindow()
+    root.mainloop(0)
