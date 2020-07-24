@@ -17,5 +17,5 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ----
 """
-import client.cmds
-import client.gui
+import client_pkg.cmds
+import client_pkg.backend
