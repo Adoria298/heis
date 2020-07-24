@@ -236,13 +236,13 @@ class UnoServicer(uno_pb2_grpc.UnoServicer):
             self.cycle_players() # an extra increment to skip the next player
         if request.action == CardAction.Value("REVERSE"):
             self.players = self.players[::-1] # reverses order of players
-            print("Players reversed.")
+            print(f"Players reversed. Next player: {self.players[0]}")
         if (request.action == CardAction.Value("WILD_DRAW4") # randomly change colour
             or request.action == CardAction.Value("WILD")): 
                 while (request.colour == CardColour.Value("BLACK") # default WILD colour
                     or request.colour == CardColour.Value("WHITE")): # unplayable
                         request.colour = random.choice(CardColour.values())
-                        print("Randomised colour of most recently played card.")
+                        print(f"Randomised colour of most recently played card to {CardColour.Name(request.colour)}.")
         print_card(request, rich_out_con, end="")
         print(" played.")
         return StateOfPlay(**self.get_state_of_play())
