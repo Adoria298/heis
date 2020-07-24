@@ -51,6 +51,10 @@ class Backend():
         self.state = self.stub.RequestStateOfPlay(self.me)
         return self.state
 
+    def get_hand(self):
+        self.get_state_of_play()
+        return self.me.hand
+
     def play_card(self, index):
         card = self.me.hand.pop(index)
         try:

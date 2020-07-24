@@ -24,7 +24,9 @@ Creates a client for HEIS, relying on backend.py, and represents it to the user 
 from tkinter import *
 from tkinter.ttk import *
 ## pip
+import grpc
 ## homemade
+from client_pkg.backend import Backend
 ### protoc generated
 from uno_pb2 import Card, CardColour, CardAction
 
@@ -84,10 +86,18 @@ class CardDisplay(LabelFrame):
 
 class MainWindow(Tk):
 
-    def __init__(self):
+    def __init__(self, host):
         super().__init__()
-        self.title("HEIS")
-        self.cd = CardDisplay(self, "Your Hand", hand=[Card(colour=4, action=3, value=20), Card(colour=1, action=6, value=50), Card(colour=5, action=2, value=20)])
+        self.title("HEIS Client")
+        name = input("What's your name? ")
+        with grpc.insecure_channel(host) as channel:
+            self.backend = Backend(channel, name)
+        self.player = self.backend.get_player()
+        self.draw_widgets()
+
+    def draw_widgets(self):
+        self.player_name_lbl = Label(self, text=f"Player: {self.player.name}")
+        self.cd = CardDisplay(self, "Your Hand", hand=self.backend.get_hand())
 
 if __name__ == "__main__":
     # testing code
@@ -97,5 +107,5 @@ if __name__ == "__main__":
     #cd = CardDisplay(cd1_root, label="Your Hand:", hand=[Card(colour=4, action=3, value=20), Card(colour=1, action=6, value=50), Card(colour=5, action=2, value=20)])
     #cd1_root.mainloop()
     ## MainFrame
-    root = MainWindow()
+    root = MainWindow(host="localhost:50051")
     root.mainloop(0)
